@@ -36,13 +36,17 @@ code{font:inherit;color:var(--fg)}
 @media (hover:hover) and (pointer:fine){.hdr-nav a:hover{color:var(--fg)}}
 .hdr-ind{position:absolute;left:0;bottom:4px;height:2px;width:0;background:var(--accent);opacity:0;pointer-events:none;transition:transform 250ms cubic-bezier(0.23,1,0.32,1),width 250ms cubic-bezier(0.23,1,0.32,1),opacity 150ms ease-out}
 .hdr-tools{display:flex;align-items:center;gap:6px}
-.hdr-lang{display:flex;border:1px solid var(--rule);border-radius:var(--r,4px);overflow:hidden}
+.hdr-lang{display:flex;border:1px solid var(--rule);border-radius:var(--r,4px)}
 .hdr-lang a{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:36px;padding:0 8px;background:none;border:0;text-decoration:none;color:var(--fg3);cursor:pointer;font-size:13px;position:relative;transition:color 150ms ease-out,background-color 150ms ease-out}
-.hdr-lang a::before{content:"";position:absolute;inset:-4px 0}
+.hdr-lang a:first-child{border-radius:calc(var(--r,4px) - 1px) 0 0 calc(var(--r,4px) - 1px)}
+.hdr-lang a:last-child{border-radius:0 calc(var(--r,4px) - 1px) calc(var(--r,4px) - 1px) 0}
+/* EN and ES touch, so each grows outward only. ES and ⌘K are 7px apart and the two hit areas meet in that gap. */
+.hdr-lang a::before{content:"";position:absolute;inset:-5px 0 -5px -4px}
+.hdr-lang a+a::before{inset:-5px -3.6px -5px 0}
 .hdr-lang a[aria-current]{background:var(--fg);color:var(--bg)}
 @media (hover:hover) and (pointer:fine){.hdr-lang a:not([aria-current]):hover{color:var(--fg)}}
 .hdr-k{min-height:38px;padding:0 10px;background:none;border:1px solid var(--rule);border-radius:var(--r,4px);color:var(--fg2);cursor:pointer;font-size:13px;white-space:nowrap;position:relative;transition:color 150ms ease-out,border-color 150ms ease-out}
-.hdr-k::before{content:"";position:absolute;inset:-3px 0}
+.hdr-k::before{content:"";position:absolute;inset:-4.5px -6px -4.5px -4.4px}
 .hdr-k kbd{font:inherit}
 @media (hover:hover) and (pointer:fine){.hdr-k:hover{color:var(--fg);border-color:var(--fg3)}}
 .hdr-k:active,.hdr-lang a:active{transform:scale(0.96)}
@@ -53,7 +57,8 @@ code{font:inherit;color:var(--fg)}
   .hdr-mark{order:1}
   .hdr-tools{order:2;margin-inline-start:auto;padding:6px 4px}
   .hdr-nav{order:3;flex-basis:100%;position:relative;justify-content:flex-start;border-top:1px solid var(--rule);margin:0 -8px;padding:0}
-  .hdr-menu{display:flex;align-items:center;gap:1ch;width:100%;min-height:44px;padding:0 16px;background:none;border:0;color:var(--fg);cursor:pointer;font-size:14px;text-align:start}
+  .hdr-menu{position:relative;display:flex;align-items:center;gap:1ch;width:100%;min-height:44px;padding:0 16px;background:none;border:0;color:var(--fg);cursor:pointer;font-size:14px;text-align:start}
+  .hdr-menu::before{content:"";position:absolute;inset:-1px 0}
   .hdr-menu-p{color:var(--accent)}
   .hdr-menu-l{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hdr-menu-l .n{font-size:11px;color:var(--accent);font-variant-numeric:tabular-nums}
@@ -151,13 +156,17 @@ code{font:inherit;color:var(--fg)}
 .a-help{display:grid;grid-template-columns:16ch minmax(0,1fr);gap:2px 1ch;margin:0}
 .a-help dt{color:var(--fg)}
 .a-help dd{margin:0;color:var(--fg3)}
-.a-ls{display:inline-flex;align-items:center;min-height:32px;margin:0 6px 4px 0;padding:0 8px;background:none;border:1px solid var(--rule);border-radius:4px;color:var(--fg);cursor:pointer;font-size:13px}
+.a-ls{display:inline-flex;align-items:center;min-height:32px;margin:0 6px 4px 0;padding:0 8px;background:none;border:1px solid var(--rule);border-radius:4px;color:var(--fg);cursor:pointer;font-size:13px;position:relative}
+/* The hit area paints under every button box (z-index:-1), so each visible button stays its own target where two areas meet. The line box would cover the areas, so only its children take the pointer. */
+.a-ls::before{content:"";position:absolute;inset:-7.5px -3px;z-index:-1}
+.a-l:has(>.a-ls){isolation:isolate;pointer-events:none}
+.a-l:has(>.a-ls)>*{pointer-events:auto}
 @media (hover:hover) and (pointer:fine){.a-ls:hover{border-color:var(--accent);color:var(--accent)}}
 .a-peek{margin-top:6px;border-radius:4px;border:1px solid var(--rule);width:240px;height:auto}
 .a-art{font:inherit;line-height:1.25;margin:2px 0}
 .a-form{display:flex;align-items:center;gap:1ch;padding:6px 16px 10px;font-size:14px}
 .a-prompt{color:var(--accent);white-space:nowrap}
-.a-form input{flex:1;min-width:0;height:40px;background:none;border:0;color:var(--fg);font:inherit;font-size:16px;caret-color:var(--accent)}
+.a-form input{flex:1;min-width:0;height:46px;margin:-3px 0;background:none;border:0;color:var(--fg);font:inherit;font-size:16px;caret-color:var(--accent)}
 .a-form input:focus{outline:none}
 .a-form:focus-within{box-shadow:inset 2px 0 0 var(--accent)}
 .a-form input::placeholder{color:var(--fg3)}
@@ -206,7 +215,10 @@ code{font:inherit;color:var(--fg)}
 .a-sub{display:grid;gap:6px;margin-top:10px;max-width:76ch}
 .a-sub li{display:grid;grid-template-columns:2ch minmax(0,1fr)}
 .a-sub li::before{content:"-";color:var(--fg3)}
-.a-links{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin-top:10px;font-size:14px}
+.a-links{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin-top:10px;font-size:14px;isolation:isolate}
+.a-links a{position:relative}
+/* z-index:-1 paints the hit area under every link box, so on wrapped rows each visible link keeps its own box. */
+.a-links a::before{content:"";position:absolute;inset:-11px 0;z-index:-1}
 .a-hint{color:var(--fg3);font-size:12px;margin-inline-start:auto}
 .a-win{display:inline-block;color:var(--bg);background:var(--gold);padding:0 6px;font-size:13px;font-weight:500;cursor:default}
 .a-pend{color:var(--warn);font-size:13px}
