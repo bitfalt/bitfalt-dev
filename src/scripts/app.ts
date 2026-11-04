@@ -1,4 +1,4 @@
-import { deckHref, hackathonGroups, hackathonsByWins, hackathons, oss, person, SECTIONS, socials, talks, coverSrc, experience, type Hackathon, type Lang, type OpenSource, type Section, type Talk } from '../data/site';
+import { deckHref, hackathonGroups, hackathonsByWins, oss, person, SECTIONS, socials, talks, coverSrc, experience, type Hackathon, type Lang, type OpenSource, type Section, type Talk } from '../data/site';
 import { dayLabel, fmt, homePath, mon, otherLang, pad2, ui } from '../i18n';
 import { sectionCommand } from '../lib/commands';
 
@@ -149,7 +149,7 @@ interface Item { g: Group; label: string; sub?: string; kw?: string; lang?: Lang
 function paletteItems(): Item[] {
   const items: Item[] = [];
   SECTIONS.forEach((id, i) => items.push({ g: 'go', label: `${pad2(i + 1)}  ${t[id]}`, kw: id, run: () => jumpTo(id) }));
-  hackathons.forEach(h => items.push({ g: 'project', label: h.name, sub: h.result === 'winner' ? `★ ${h.event}` : h.event, kw: h.id, run: () => jumpTo('p-' + h.id) }));
+  hackathonsByWins().forEach(h => items.push({ g: 'project', label: h.name, sub: h.result === 'winner' ? `★ ${h.event}` : h.event, kw: h.id, run: () => jumpTo('p-' + h.id) }));
   oss.forEach(o => items.push({ g: 'project', label: o.name, sub: o.repo, kw: o.id, run: () => jumpTo('p-' + o.id) }));
   talks.forEach(k => items.push({ g: 'talk', label: k.title, sub: `Stellar Sessions #${k.n}`, kw: `deck slides charla stellar-sessions-${k.n} ${k.slug}`, lang: 'es', run: () => openTab(deckHref(k)) }));
   items.push({ g: 'action', label: t.copyEmail, sub: person.email, kw: 'email correo mail contact', run: copyEmail });
@@ -341,7 +341,7 @@ const SEC_ALIAS: Record<string, Section | 'top'> = { experience: 'experience', e
 const SOCIAL_ALIAS: Record<string, string> = { x: 'X', twitter: 'X', github: 'GitHub', gh: 'GitHub', linkedin: 'LinkedIn' };
 
 type Project = { id: string; h: Hackathon; o?: undefined } | { id: string; o: OpenSource; h?: undefined };
-const projects = (): Project[] => [...hackathons.map(h => ({ id: h.id, h })), ...oss.map(o => ({ id: o.id, o }))];
+const projects = (): Project[] => [...hackathonsByWins().map(h => ({ id: h.id, h })), ...oss.map(o => ({ id: o.id, o }))];
 function findProject(q: string) {
   q = q.toLowerCase().replace(/\s+/g, '-');
   return projects().find(p => p.id === q || p.id.startsWith(q) || (p.h ?? p.o).name.toLowerCase().replace(/\s+/g, '-') === q);
@@ -430,8 +430,7 @@ function shell() {
       const s = SEC_ALIAS[target];
       if (!target) { lsSections(); return void line(esc(t.lsHint), 'a-dim'); }
       if (s === 'hackathons') {
-        const list = parts.includes('--sort=wins') ? hackathonsByWins() : hackathons;
-        return void line(list.map(h => `<button type="button" class="a-ls" data-run="cat ${h.id}">${h.id}${h.result === 'winner' ? ' <span class="a-star">★</span>' : ''}</button>`).join(''));
+        return void line(hackathonsByWins().map(h => `<button type="button" class="a-ls" data-run="cat ${h.id}">${h.id}${h.result === 'winner' ? ' <span class="a-star">★</span>' : ''}</button>`).join(''));
       }
       if (s === 'oss') return void line(oss.map(o => `<button type="button" class="a-ls" data-run="cat ${o.id}">${o.id}</button>`).join(''));
       if (s === 'talks') return void line(talks.map(k => `<button type="button" class="a-ls" data-run="open ${k.n}">${k.slug}.deck</button>`).join(''));
