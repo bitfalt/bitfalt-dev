@@ -277,3 +277,7 @@ export function hackathonsByWins(list: Hackathon[] = hackathons): Hackathon[] {
   const g = hackathonGroups(list);
   return [...g.winners, ...g.pending, ...g.rest];
 }
+
+export const currentJob = experience.find(e => e.end === null)!;
+export const winnerCount = hackathonGroups().winners.length;
+export const bothTracks = hackathons.find(h => h.win === 'both')!;

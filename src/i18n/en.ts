@@ -1,3 +1,8 @@
+import { bothTracks, currentJob, person, winnerCount } from '../data/site';
+
+const { email } = person;
+const { degree, school } = person.study;
+
 export const en = {
   skip: 'Skip to content',
   experience: 'Experience', oss: 'Open source', hackathons: 'Hackathons', talks: 'Talks', writing: 'Writing', top: 'Top',
@@ -8,7 +13,7 @@ export const en = {
   paletteEmpty: 'Nothing matches “{q}”. Try “talks”, “email” or “sigilo”.',
   groups: { go: 'Jump to', project: 'Projects', talk: 'Talks', action: 'Actions' },
   hints: { go: 'jump', project: 'show', talk: 'open deck', action: 'run' },
-  copyEmail: 'Copy email address', copied: 'Copied dagarbanz@proton.me', copyFail: 'Clipboard blocked. The address is dagarbanz@proton.me',
+  copyEmail: 'Copy email address', copied: `Copied ${email}`, copyFail: `Clipboard blocked. The address is ${email}`,
   switchLang: 'Cambiar a español', switchedLang: 'Language: English',
   openGithub: 'Open GitHub profile', openLinkedin: 'Open LinkedIn', openX: 'Open X profile',
   present: 'present', winner: 'Winner', winnerBoth: 'Prize winner, both tracks', pending: 'Result pending',
@@ -26,12 +31,12 @@ export const en = {
   heatKeys: 'Arrow keys move by day and week.',
   heroLine: 'I build infrastructure in Rust: exchanges, AI platforms, blockchains. Hackathons on the side. Pura vida in between.',
   now: 'now', study: 'study', based: 'based', stack: 'stack', reach: 'reach',
-  nowVal: 'Backend Engineer at Nexus',
+  nowVal: `${currentJob.role} at ${currentJob.org}`,
   footer: 'Facts from the résumé, October 2026.',
   local: 'local time in Costa Rica',
   newTab: ' (opens in a new tab)',
   ossMore: '…  3 more pull requests and 1 repo of my own',
-  hackBoth: '# parquiz: both tracks',
+  hackBoth: `# ${bothTracks.id}: both tracks`,
   hackPending: '# result pending',
   talksNote: '# all in Spanish',
   shellOutput: 'Shell output',
@@ -43,7 +48,7 @@ export const en = {
   notFoundTitle: '404 · Not found',
   notFoundLine: 'cd: {path}: no such file or directory',
   notFoundSub: 'The page you asked for is not here.',
-  boot: ['bitfalt-os 3.0 · costa rica', 'mounting /experience ............ ok', 'mounting /oss ................... ok', 'mounting /hackathons ............ ok', 'counting trophies ............... 3', 'brewing café chorreado .......... ok', 'ready.'],
+  boot: ['bitfalt-os 3.0 · costa rica', 'mounting /experience ............ ok', 'mounting /oss ................... ok', 'mounting /hackathons ............ ok', `counting trophies ............... ${winnerCount}`, 'brewing café chorreado .......... ok', 'ready.'],
   skipBoot: 'Skip intro',
   hello: 'Hi, I’m Daniel. Type <b>help</b>, or just scroll. Both work.',
   try: 'try',
@@ -57,15 +62,15 @@ export const en = {
   opening: 'opening Stellar Sessions #{n}: “{title}” in a new tab…',
   openingSocial: 'opening {u} in a new tab…',
   popup: 'Pop-up blocked. Use this link instead:',
-  hire: ['[sudo] password for recruiter: ********', 'Permission granted. Good call.', 'Write to dagarbanz@proton.me. Email copied to your clipboard.'],
+  hire: ['[sudo] password for recruiter: ********', 'Permission granted. Good call.', `Write to ${email}. Email copied to your clipboard.`],
   sudo: 'Nice try. This incident will be reported to the coffee plantation.',
   coffee: 'Café chorreado, from Costa Rica. Pura vida.',
   rm: 'rm: refusing to delete a portfolio that just got a header.',
   vim: ':q! … you made it out. Most people don’t. Scroll down instead.',
-  whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', 'Now: Backend Engineer at Nexus. Studying: M.S. Computer Science at TEC.'],
+  whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', `Now: ${currentJob.role} at ${currentJob.org}. Studying: ${degree} at ${school}.`],
   lsHint: 'cd into one, or cat a project.',
   langOk: 'Language set to English.',
-  trophies: 'Prize winners: 3 projects. ParQuiz placed in both tracks.',
+  trophies: `Prize winners: ${winnerCount} projects. ${bothTracks.name} placed in both tracks.`,
   showOnPage: 'show on page',
   exit: 'logout? Not yet. Scroll down.',
 };

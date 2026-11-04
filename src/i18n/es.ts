@@ -1,4 +1,8 @@
+import { bothTracks, currentJob, person, winnerCount } from '../data/site';
 import type { UI } from './en';
+
+const { email } = person;
+const { degree, school } = person.study;
 
 export const es: UI = {
   skip: 'Saltar al contenido',
@@ -10,7 +14,7 @@ export const es: UI = {
   paletteEmpty: 'Nada coincide con “{q}”. Probá “charlas”, “correo” o “sigilo”.',
   groups: { go: 'Ir a', project: 'Proyectos', talk: 'Charlas', action: 'Acciones' },
   hints: { go: 'ir', project: 'ver', talk: 'abrir slides', action: 'ejecutar' },
-  copyEmail: 'Copiar el correo', copied: 'Copiado dagarbanz@proton.me', copyFail: 'El portapapeles está bloqueado. El correo es dagarbanz@proton.me',
+  copyEmail: 'Copiar el correo', copied: `Copiado ${email}`, copyFail: `El portapapeles está bloqueado. El correo es ${email}`,
   switchLang: 'Switch to English', switchedLang: 'Idioma: español',
   openGithub: 'Abrir perfil de GitHub', openLinkedin: 'Abrir LinkedIn', openX: 'Abrir perfil de X',
   present: 'presente', winner: 'Ganador', winnerBoth: 'Premio en ambas categorías', pending: 'Resultado pendiente',
@@ -28,12 +32,12 @@ export const es: UI = {
   heatKeys: 'Las flechas mueven por día y por semana.',
   heroLine: 'Construyo infraestructura en Rust: exchanges, plataformas de IA, blockchains. Hackatones en paralelo. Pura vida en el medio.',
   now: 'ahora', study: 'estudio', based: 'base', stack: 'stack', reach: 'contacto',
-  nowVal: 'Backend Engineer en Nexus',
+  nowVal: `${currentJob.role} en ${currentJob.org}`,
   footer: 'Datos del currículum, octubre de 2026.',
   local: 'hora local en Costa Rica',
   newTab: ' (se abre en otra pestaña)',
   ossMore: '…  3 pull requests más y 1 repo propio',
-  hackBoth: '# parquiz: ambas categorías',
+  hackBoth: `# ${bothTracks.id}: ambas categorías`,
   hackPending: '# resultado pendiente',
   talksNote: '# las tres en español',
   shellOutput: 'Salida de la shell',
@@ -45,7 +49,7 @@ export const es: UI = {
   notFoundTitle: '404 · No encontrado',
   notFoundLine: 'cd: {path}: no existe ese archivo o directorio',
   notFoundSub: 'La página que buscás no está aquí.',
-  boot: ['bitfalt-os 3.0 · costa rica', 'montando /experiencia ........... ok', 'montando /oss ................... ok', 'montando /hackatones ............ ok', 'contando trofeos ................ 3', 'chorreando café ................. ok', 'listo.'],
+  boot: ['bitfalt-os 3.0 · costa rica', 'montando /experiencia ........... ok', 'montando /oss ................... ok', 'montando /hackatones ............ ok', `contando trofeos ................ ${winnerCount}`, 'chorreando café ................. ok', 'listo.'],
   skipBoot: 'Saltar intro',
   hello: 'Hola, soy Daniel. Escribí <b>help</b>, o simplemente bajá. Las dos sirven.',
   try: 'probá',
@@ -59,15 +63,15 @@ export const es: UI = {
   opening: 'abriendo Stellar Sessions #{n}: “{title}” en otra pestaña…',
   openingSocial: 'abriendo {u} en otra pestaña…',
   popup: 'El navegador bloqueó la pestaña. Usá este enlace:',
-  hire: ['[sudo] contraseña para recruiter: ********', 'Permiso concedido. Buena decisión.', 'Escribí a dagarbanz@proton.me. El correo ya está en tu portapapeles.'],
+  hire: ['[sudo] contraseña para recruiter: ********', 'Permiso concedido. Buena decisión.', `Escribí a ${email}. El correo ya está en tu portapapeles.`],
   sudo: 'Buen intento. Este incidente será reportado al cafetal.',
   coffee: 'Café chorreado, de Costa Rica. Pura vida.',
   rm: 'rm: me niego a borrar un portafolio que acaba de estrenar header.',
   vim: ':q! … lograste salir. Casi nadie lo logra. Mejor bajá.',
-  whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', 'Ahora: Backend Engineer en Nexus. Estudio: M.S. Computer Science en el TEC.'],
+  whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', `Ahora: ${currentJob.role} en ${currentJob.org}. Estudio: ${degree} en el ${school}.`],
   lsHint: 'entrá con cd, o leé un proyecto con cat.',
   langOk: 'Idioma: español.',
-  trophies: 'Proyectos premiados: 3. ParQuiz ganó en ambas categorías.',
+  trophies: `Proyectos premiados: ${winnerCount}. ${bothTracks.name} ganó en ambas categorías.`,
   showOnPage: 'ver en la página',
   exit: 'logout? Todavía no. Bajá.',
 };
