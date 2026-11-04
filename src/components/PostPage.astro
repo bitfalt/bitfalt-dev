@@ -1,16 +1,22 @@
 ---
 import { render } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import { mon } from '../i18n';
-import type { Post } from '../lib/posts';
+import { fmt, mon, ui } from '../i18n';
+import { postHref, type Post } from '../lib/posts';
+import { abs, blogPostingLd, ogImage } from '../lib/seo';
 
 interface Props { post: Post }
 const { post } = Astro.props;
 const { Content } = await render(post);
 const lang = post.data.lang;
 const iso = post.data.date.toISOString().slice(0, 10);
+const href = postHref(post);
+const image = ogImage(href.slice(1));
+const title = `${post.data.title} · bitfalt`;
+const imageAlt = fmt(ui[lang].ogPostAlt, { title: post.data.title, date: iso });
+const jsonLd = blogPostingLd({ title: post.data.title, description: post.data.summary, date: iso, lang, url: abs(Astro.url.pathname), image });
 ---
-<Base lang={lang} title={`${post.data.title} · bitfalt`} description={post.data.summary}>
+<Base lang={lang} title={title} description={post.data.summary} image={image} imageAlt={imageAlt} jsonLd={jsonLd} published={iso}>
   <article class="a-plain a-post">
     <p class="a-ps" aria-hidden="true">~/bitfalt $ cat writing/{post.id}.md</p>
     <h1>{post.data.title}</h1>

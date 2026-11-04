@@ -1,10 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import { ui } from '../i18n';
+import { ogImage, websiteLd } from '../lib/seo';
 
 const t = ui.en;
 ---
-<Base lang="en" title={t.notFoundTitle} description={t.notFoundSub} noindex>
+<Base lang="en" title={t.notFoundTitle} description={t.notFoundSub} image={ogImage('index')} imageAlt={t.ogHomeAlt} jsonLd={websiteLd()} noindex>
   <section class="a-plain" aria-labelledby="nf-h">
     <p class="a-ps" aria-hidden="true">~/bitfalt $ cd <span data-path>…</span></p>
     <h1 id="nf-h">404</h1>

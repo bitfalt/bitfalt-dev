@@ -3,21 +3,25 @@ import '../styles/global.css';
 import type { Lang } from '../data/site';
 import { ui } from '../i18n';
 import Header from '../components/Header.astro';
+import { abs, headTags, type JsonLd } from '../lib/seo';
 
 interface Props {
   lang: Lang;
   title: string;
   description: string;
+  image: string;
+  imageAlt: string;
+  jsonLd: JsonLd;
   alternates?: { en: string; es: string };
+  published?: string;
   noindex?: boolean;
   bootable?: boolean;
   rss?: string;
 }
-const { lang, title, description, alternates, noindex = false, bootable = false, rss } = Astro.props;
-const site = Astro.site!;
-const canonical = new URL(Astro.url.pathname, site).href;
-const og = new URL('/og.png', site).href;
+const { lang, title, description, image, imageAlt, jsonLd, alternates, published, noindex = false, bootable = false, rss } = Astro.props;
+const canonical = abs(Astro.url.pathname);
 const t = ui[lang];
+const head = headTags({ lang, title, description, canonical, image, imageAlt, jsonLd, alternates, type: published ? 'article' : 'website', ...(published ? { published } : {}) });
 ---
 <!doctype html>
 <html lang={lang}>
@@ -25,13 +29,7 @@ const t = ui[lang];
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
-<meta name="description" content={description}>
-<link rel="canonical" href={canonical}>
-{alternates && <>
-  <link rel="alternate" hreflang="en" href={new URL(alternates.en, site).href}>
-  <link rel="alternate" hreflang="es" href={new URL(alternates.es, site).href}>
-  <link rel="alternate" hreflang="x-default" href={new URL(alternates.en, site).href}>
-</>}
+<Fragment set:html={head} />
 {noindex && <meta name="robots" content="noindex">}
 <meta name="theme-color" content="#0d0e10">
 <meta name="color-scheme" content="dark">
@@ -40,21 +38,6 @@ const t = ui[lang];
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="alternate" type="application/rss+xml" title={t.writingTitle} href={rss ?? (lang === 'es' ? '/es/rss.xml' : '/rss.xml')}>
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="bitfalt.dev">
-<meta property="og:title" content={title}>
-<meta property="og:description" content={description}>
-<meta property="og:url" content={canonical}>
-<meta property="og:locale" content={lang === 'es' ? 'es_CR' : 'en_US'}>
-<meta property="og:image" content={og}>
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="~/bitfalt: Daniel Garbanzo">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@bitfalt">
-<meta name="twitter:title" content={title}>
-<meta name="twitter:description" content={description}>
-<meta name="twitter:image" content={og}>
 <script is:inline define:vars={{ bootable }}>
   document.documentElement.classList.add('js');
   try {
