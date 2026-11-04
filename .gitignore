@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+tests/shots/
+test-results/
+playwright-report/
+.vercel/
+.DS_Store
