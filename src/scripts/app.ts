@@ -234,8 +234,10 @@ function drawPalette(rebuild = true) {
 function runPalette(i: number) {
   const it = P.list[i];
   if (!it) return;
+  const ret = P.ret;
   closePalette(true);
-  it.run();
+  void it.run();
+  if (document.activeElement === document.body || !document.activeElement) ret?.focus?.({ preventScroll: true });
 }
 function closePalette(skipRestore = false) {
   if (!P.open) return;
