@@ -539,3 +539,5 @@ function shell() {
     if (jp) jumpTo('p-' + jp.dataset['jumpP']);
   });
 }
+
+document.documentElement.setAttribute('data-ready', '');
