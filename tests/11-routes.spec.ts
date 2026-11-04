@@ -21,7 +21,7 @@ const ROUTES: [string, number, RegExp?][] = [
   ['/rss.xml', 200, /<rss/], ['/es/rss.xml', 200, /<language>es<\/language>/],
   ['/sitemap-index.xml', 200, /sitemap-0\.xml/], ['/sitemap-0.xml', 200, /talks\/stellar-sessions-2/],
   ['/robots.txt', 200, /Sitemap: https:\/\/bitfalt\.dev\/sitemap-index\.xml/],
-  ['/og.png', 200], ['/favicon.svg', 200], ['/favicon-32.png', 200], ['/favicon.ico', 200],
+  ['/og/index.png', 200], ['/og/es/index.png', 200], ['/favicon.svg', 200], ['/favicon-32.png', 200], ['/favicon.ico', 200],
   ['/does-not-exist', 404, /no such file or directory/],
 ];
 

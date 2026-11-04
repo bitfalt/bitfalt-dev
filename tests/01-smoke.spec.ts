@@ -29,7 +29,7 @@ for (const { lang, path } of LANGS) {
     expect(head.lang).toBe(lang);
     expect(head.alt).toEqual(['en=https://bitfalt.dev/', 'es=https://bitfalt.dev/es/', 'x-default=https://bitfalt.dev/']);
     expect(head.canonical).toBe(`https://bitfalt.dev${path}`);
-    expect(head.og).toBe('https://bitfalt.dev/og.png');
+    expect(head.og).toBe(`https://bitfalt.dev/og/${lang === 'en' ? '' : 'es/'}index.png`);
     expect(head.tagline).toBe(lang === 'en'
       ? 'I build infrastructure in Rust: exchanges, AI platforms, blockchains. Hackathons on the side. Pura vida in between.'
       : 'Construyo infraestructura en Rust: exchanges, plataformas de IA, blockchains. Hackatones en paralelo. Pura vida en el medio.');
