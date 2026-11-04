@@ -12,7 +12,9 @@ export interface Person {
   handle: string;
   email: string;
   summary: Text;
-  study: { degree: string; school: string; start: YearMonth; end: YearMonth | null };
+  country: string;
+  skills: string[];
+  study: { degree: string; school: string; schoolName: string; start: YearMonth; end: YearMonth | null };
 }
 
 export interface Social {
@@ -83,7 +85,9 @@ export const person: Person = {
     en: 'Software engineer building AI and trading infrastructure in Rust. Background in product engineering, automation, OSS, blockchain, and developer tooling.',
     es: 'Ingeniero de software que construye infraestructura de IA y trading en Rust. Experiencia en ingeniería de producto, automatización, OSS, blockchain y herramientas para desarrolladores.',
   },
-  study: { degree: 'M.S. Computer Science', school: 'TEC', start: '2026-02', end: null },
+  country: 'Costa Rica',
+  skills: ['Rust', 'TypeScript', 'Python', 'Go', 'C++', 'Bash', 'React', 'Next.js', 'GCP', 'infra', 'developer tools', 'Claude Code', 'Codex'],
+  study: { degree: 'M.S. Computer Science', school: 'TEC', schoolName: 'Instituto Tecnológico de Costa Rica', start: '2026-02', end: null },
 };
 
 export const socials: Social[] = [

@@ -1,6 +1,8 @@
-import { bothTracks, currentJob, person, winnerCount } from '../data/site';
+import { bothTracks, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
 
 const { email } = person;
+const heroLead = 'I build infrastructure in Rust: exchanges, AI platforms, blockchains.';
+const winnerNames = hackathonGroups().winners.map(h => h.name);
 const { degree, school } = person.study;
 
 export const en = {
@@ -29,7 +31,8 @@ export const en = {
   dayCountOne: '{n} contribution on {d}',
   dayCountMany: '{n} contributions on {d}',
   heatKeys: 'Arrow keys move by day and week.',
-  heroLine: 'I build infrastructure in Rust: exchanges, AI platforms, blockchains. Hackathons on the side. Pura vida in between.',
+  heroLead,
+  heroLine: `${heroLead} Hackathons on the side. Pura vida in between.`,
   now: 'now', study: 'study', based: 'based', stack: 'stack', reach: 'reach',
   nowVal: `${currentJob.role} at ${currentJob.org}`,
   footer: 'Facts from the résumé, October 2026.',
@@ -43,7 +46,12 @@ export const en = {
   coverAlt: 'Stellar Sessions #{n} cover slide',
   metaTitle: 'Daniel Garbanzo (bitfalt) · Rust infrastructure engineer',
   writingTitle: 'Writing · Daniel Garbanzo (bitfalt)',
-  writingDescription: 'Posts by Daniel Garbanzo (bitfalt).',
+  writingDescription: `Writing by ${person.name} (${person.handle}), ${currentJob.role} at ${currentJob.org} in ${person.country}, who builds infrastructure in Rust: exchanges, AI platforms, blockchains.`,
+  metaDescription: `${person.name} (${person.handle}), ${currentJob.role} at ${currentJob.org} in ${person.country}. ${heroLead}`,
+  ogContrib: '{n} contributions',
+  ogHomeAlt: `Terminal card for ${person.name} (${person.handle}): “${heroLead}” It lists the prize-winning hackathon projects ${winnerNames.join(', ')} next to a green GitHub contribution heatmap.`,
+  ogWritingAlt: `Terminal card for Writing by ${person.name} (${person.handle}): the command ls ~/writing, the latest posts and a green GitHub contribution heatmap.`,
+  ogPostAlt: `Card for the post “{title}” by ${person.name} (${person.handle}), {date}.`,
   backHome: 'cd ~',
   notFoundTitle: '404 · Not found',
   notFoundLine: 'cd: {path}: no such file or directory',
