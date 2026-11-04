@@ -67,7 +67,7 @@ for n in 1 2 3; do cp out/stellar-sessions-$n.html ../../public/talks/stellar-se
 ## OG image and favicons
 
 ```sh
-pnpm og                        # renders public/og.png, favicon-32.png, apple-touch-icon.png
+pnpm og                        # renders public/og.png, favicon-32.png, favicon.ico, apple-touch-icon.png
 ```
 
 ## Tests
