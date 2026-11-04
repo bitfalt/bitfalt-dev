@@ -1,0 +1,21 @@
+---
+import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { mon } from '../i18n';
+import type { Post } from '../lib/posts';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+const { Content } = await render(post);
+const lang = post.data.lang;
+const iso = post.data.date.toISOString().slice(0, 10);
+---
+<Base lang={lang} title={`${post.data.title} · bitfalt`} description={post.data.summary}>
+  <article class="a-plain a-post">
+    <p class="a-ps" aria-hidden="true">~/bitfalt $ cat writing/{post.id}.md</p>
+    <h1>{post.data.title}</h1>
+    <p class="a-meta"><time datetime={iso}>{mon(lang, iso.slice(0, 7))}</time></p>
+    <Content />
+  </article>
+</Base>
+<script src="../scripts/app.ts"></script>

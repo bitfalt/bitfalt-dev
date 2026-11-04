@@ -1,0 +1,9 @@
+---
+import type { Lang } from '../data/site';
+import { sectionCommand, type CommandKey } from '../lib/commands';
+
+interface Props { k: CommandKey; lang: Lang; postCount?: number }
+const { k, lang, postCount = 0 } = Astro.props;
+const c = sectionCommand(k, lang, postCount);
+---
+<div class="a-cmdl"><p class="a-cmdl-c"><span class="a-ps" aria-hidden="true">$ </span><code>{c.cmd}</code></p>{c.out.length > 0 && <pre class="a-cmdl-o">{c.out.join('\n')}</pre>}</div>

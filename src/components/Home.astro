@@ -1,0 +1,134 @@
+---
+import { archive, coverSrc, deckHref, experience, hackathonsByWins, oss, person, SECTIONS, socials, talks, type Hackathon, type Lang } from '../data/site';
+import { dayLabel, fmt, mon, monthName, pad2, range, ui } from '../i18n';
+import { contribGrid } from '../lib/contrib';
+import { postHref, type Post } from '../lib/posts';
+import Cmd from './Cmd.astro';
+import Ext from './Ext.astro';
+import Section from './Section.astro';
+
+interface Props { lang: Lang; posts: Post[] }
+const { lang, posts } = Astro.props;
+const t = ui[lang];
+const H = contribGrid();
+const contribText = fmt(t.contrib, { n: H.total.toLocaleString('en-US') });
+const winLabel = (h: Hackathon) => (h.win === 'both' ? t.winnerBoth : t.winner);
+const chips = ['help', 'whoami', 'ls', 'trophies', 'cat parquiz', 'socials', 'sudo hire-me'];
+const codeParts = (text: string, code?: string) => {
+  if (!code || !text.includes(code)) return [text];
+  const i = text.indexOf(code);
+  return [text.slice(0, i), code, text.slice(i + code.length)];
+};
+let cell = 0;
+---
+<section class="a-hero" aria-label={person.name}>
+  <h1 class="sr-only">Daniel Garbanzo, bitfalt</h1>
+  <div class="a-intro">
+    <p class="a-hi">Daniel Garbanzo <span>/ bitfalt</span></p>
+    <p class="a-tag">{t.heroLine}</p>
+    <dl class="a-kv">
+      <dt>{t.now}</dt><dd>{t.nowVal}</dd>
+      <dt>{t.study}</dt><dd>{person.study.degree}, {person.study.school}</dd>
+      <dt>{t.based}</dt><dd>Costa Rica <span class="a-clock" data-clock></span></dd>
+      <dt>{t.reach}</dt><dd>{socials.map((s, i) => <>{i > 0 && ' · '}<Ext href={s.url} lang={lang}>{s.label}</Ext></>)} · <a class="a-mail" href={`mailto:${person.email}`} data-copy-email>{person.email}</a></dd>
+    </dl>
+  </div>
+  <div class="a-term" data-term>
+    <div class="a-bar"><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span><p>bitfalt@cr: ~</p><button type="button" class="a-skip" data-skip hidden>{t.skipBoot} <kbd>esc</kbd></button></div>
+    <div class="a-out" data-out role="log" aria-live="polite" aria-label={t.shellOutput}>
+      <div class="a-l a-hello" set:html={t.hello} />
+      <div class="a-l a-echo"><span class="a-ps">~/bitfalt $</span> ls</div>
+      <div class="a-l">{SECTIONS.map((id, i) => <button type="button" class="a-ls" data-run={`cd ${id}`}>{pad2(i + 1)} {id}/</button>)}</div>
+      <div class="a-l a-dim">{t.lsHint}</div>
+    </div>
+    <form class="a-form" data-form autocomplete="off">
+      <label for="a-cmd" class="a-prompt"><span aria-hidden="true">~/bitfalt $</span><span class="sr-only">{t.inputLabel}</span></label>
+      <input id="a-cmd" name="cmd" type="text" spellcheck="false" autocapitalize="off" enterkeyhint="go" placeholder="help">
+    </form>
+    <div class="a-chips" role="group" aria-label={t.try}><span aria-hidden="true">{t.try}:</span>{chips.map(c => <button type="button" data-run={c}>{c}</button>)}</div>
+  </div>
+</section>
+
+<section class="a-heat" aria-label={contribText}>
+  <Cmd k="heat" lang={lang} />
+  <figure class="heat-fig">
+    <figcaption><strong>{contribText}</strong> <span class="heat-st" aria-live="polite">{fmt(t.busiest, { d: dayLabel(lang, H.best.date), n: H.best.n })}</span></figcaption>
+    <div class="heat-scroll" data-heat-scroll>
+      <div class="heat-months" aria-hidden="true" style={`grid-template-columns:repeat(${H.weeks.length},var(--cell))`}>{H.monthCols.map(m => <span style={`grid-column:${m.col + 1}`}>{monthName(lang, m.month)}</span>)}</div>
+      <div class="heat heat-sq" tabindex="0" role="group" aria-label={`${contribText}. ${t.heatKeys}`}>{H.weeks.map(w => (
+        <span class="hw">{w.map(d => <span class="hc" data-i={cell++} data-l={d.level} data-n={d.n} data-d={d.date}></span>)}</span>
+      ))}</div>
+    </div>
+  </figure>
+</section>
+
+<Section id="experience" n={1} lang={lang}>
+  <ul class="a-list">{experience.map(e => (
+    <li class="a-it"><span class="a-b" aria-hidden="true">[*]</span><div>
+      <div class="a-row"><span class="a-name">{e.org}</span><span class="a-meta">{range(lang, e.start, e.end)}</span></div>
+      <div class="a-role">{e.role}{e.where && ` · ${t[e.where]}`}</div>
+      {e.summary && <p class="a-p">{e.summary[lang]}</p>}
+      <ul class="a-sub">{e.bullets.map(b => <li>{b[lang]}</li>)}</ul>
+      {e.links.length > 0 && <div class="a-links">{e.links.map(l => <Ext href={l.url} lang={lang}>{l.label} ↗</Ext>)}</div>}
+    </div></li>
+  ))}</ul>
+</Section>
+
+<Section id="oss" n={2} lang={lang}>
+  <ul class="a-list a-grid2">{oss.map(o => (
+    <li class="a-it a-card" id={`p-${o.id}`}><span class="a-b" aria-hidden="true">[*]</span><div>
+      <div class="a-row"><span class="a-name">{o.name}</span>{o.stars && <span class="a-meta"><span aria-hidden="true">★ </span>{o.stars}<span class="sr-only"> stars</span></span>}</div>
+      <div class="a-meta">{o.repo}{o.own && ` (${t.own})`}{o.date && ` · ${mon(lang, o.date)}`}</div>
+      <p class="a-p">{codeParts(o.what[lang], o.code).map((part, i) => (i === 1 ? <code>{part}</code> : part))}{o.note && <> <span class="a-meta">({o.note[lang]})</span></>}</p>
+      <div class="a-links"><Ext href={o.url} lang={lang}>{o.pr ? `PR ${o.pr} ↗` : 'repo ↗'}</Ext><span class="a-hint" aria-hidden="true">cat {o.id}</span></div>
+    </div></li>
+  ))}</ul>
+</Section>
+
+<Section id="hackathons" n={3} lang={lang}>
+  <ul class="a-list">{hackathonsByWins().map(h => (
+    <li class={`a-it${h.result === 'winner' ? ' a-winner' : ''}`} id={`p-${h.id}`}><span class="a-b" aria-hidden="true">[*]</span><div>
+      <div class="a-row"><span class="a-name">{h.name}</span>
+        {h.result === 'winner' && <span class="a-win" data-win>[{winLabel(h).toLowerCase()}]</span>}
+        {h.result === 'pending' && <span class="a-pend">[{t.pending.toLowerCase()}<i class="a-cur" aria-hidden="true">_</i>]</span>}
+        <span class="a-meta">{mon(lang, h.date)}</span></div>
+      <div class="a-role">{h.event}{h.entry && ` · ${t[h.entry]}`}</div>
+      <ul class="a-sub">{h.bullets.map(b => <li>{b[lang]}</li>)}</ul>
+      {h.links.length > 0 && <div class="a-links">{h.links.map(l => <Ext href={l.url} lang={lang}>{l.label} ↗</Ext>)}</div>}
+    </div></li>
+  ))}</ul>
+  <details class="a-arch"><summary><span aria-hidden="true">[+]</span> {t.archive} <span class="a-meta">({archive.length})</span></summary>
+    <ul class="a-list">{archive.map(x => (
+      <li class="a-it"><span class="a-b" aria-hidden="true">[*]</span><div>
+        <span class="a-name">{x.name}</span>{x.event && <> <span class="a-meta">{x.event}</span></>}
+        {x.what && <p class="a-p">{x.what[lang]}</p>}
+        <div class="a-links"><Ext href={x.url} lang={lang}>{x.url.replace('https://', '')} ↗</Ext></div>
+      </div></li>
+    ))}</ul>
+  </details>
+</Section>
+
+<Section id="talks" n={4} lang={lang}>
+  <ul class="a-talks">{talks.map(k => (
+    <li class="a-talk">
+      <a class="a-thumb" href={deckHref(k)} target="_blank" rel="noopener" aria-label={fmt(t.slidesLink, { n: k.n })}><img src={coverSrc(k)} alt="" width="800" height="450" loading="lazy" decoding="async"><span class="a-open" aria-hidden="true">open {k.n} ↗</span></a>
+      <div class="a-meta">Stellar Sessions #{k.n} · {fmt(t.slides, { n: k.slides })}</div>
+      <h3 lang="es">{k.title}</h3>
+      <p class="a-p">{k.what[lang]}</p>
+      <div class="a-links"><a href={deckHref(k)} target="_blank" rel="noopener">{fmt(t.slidesLink, { n: k.n })} ↗</a></div>
+    </li>
+  ))}</ul>
+</Section>
+
+<Section id="writing" n={5} lang={lang} postCount={posts.length}>
+  <ul class="a-list">{posts.length === 0
+    ? <li class="a-it"><span class="a-b" aria-hidden="true">[ ]</span><div><span class="a-name">{t.emptyWriting}</span><p class="a-p">{t.emptyWritingSub}</p></div></li>
+    : posts.slice(0, 5).map(p => (
+      <li class="a-it"><span class="a-b" aria-hidden="true">[*]</span><div>
+        <div class="a-row"><a class="a-name" href={postHref(p)}>{p.data.title}</a><time class="a-meta" datetime={p.data.date.toISOString().slice(0, 10)}>{mon(lang, p.data.date.toISOString().slice(0, 7))}</time></div>
+        <p class="a-p">{p.data.summary}</p>
+      </div></li>
+    ))}</ul>
+</Section>
+
+<footer class="a-foot"><span>{t.footer}</span><span class="a-foot-l">{socials.map((s, i) => <>{i > 0 && ' · '}<Ext href={s.url} lang={lang}>{s.label}</Ext></>)}</span><span aria-hidden="true">exit 0</span></footer>

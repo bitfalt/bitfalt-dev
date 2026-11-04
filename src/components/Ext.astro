@@ -1,0 +1,8 @@
+---
+import type { Lang } from '../data/site';
+import { ui } from '../i18n';
+
+interface Props { href: string; lang: Lang; class?: string }
+const { href, lang, class: cls } = Astro.props;
+---
+<a class={cls} href={href} target="_blank" rel="noopener"><slot /><span class="sr-only">{ui[lang].newTab}</span></a>
