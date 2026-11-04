@@ -21,6 +21,9 @@ pnpm preview             # serve dist/ in the foreground
 - `src/content/writing/`: blog posts (Astro content collection `writing`).
 - `src/scripts/app.ts`: the only client script (header, palette, shell, heatmap, winner celebration, boot).
 - `public/talks/<slug>/index.html`: slide-only decks, served at `/talks/<slug>`.
+- `src/lib/seo.ts`: head tags (description, canonical, hreflang, OG, Twitter) and JSON-LD for every page and deck.
+- `src/lib/og.ts`, `src/pages/og/[...key].png.ts`: OG images, rendered at build time with satori and resvg.
+- `src/assets/fonts/`: Geist Mono TTF files for the OG renderer (satori cannot read woff2), with `OFL.txt`.
 
 ## Add a post
 
@@ -37,6 +40,8 @@ draft: false
 
 Body in Markdown.
 ```
+
+`summary` is the meta description. Keep it between 110 and 160 characters. The build renders the post's OG image at `/og/writing/<slug>.png` (or `/og/es/writing/<slug>.png`) from the title, date and language.
 
 English posts appear at `/writing/<slug>`, in `/rss.xml` and on the home page. Spanish posts appear at `/es/writing/<slug>`, in `/es/rss.xml` and on `/es/`. Set `draft: true` to keep a post out of the build.
 
@@ -62,12 +67,16 @@ node verify.mjs                # slide count, no notes, arrow navigation
 for n in 1 2 3; do cp out/stellar-sessions-$n.html ../../public/talks/stellar-sessions-$n/index.html; done
 ```
 
+`build-public-decks.py` runs `node deck-head.ts` to inject the description, canonical, OG, Twitter, JSON-LD, theme-color and favicon tags into `<head>`. The tags come from `src/data/site.ts` through `src/lib/seo.ts`. Do not edit the deck HTML by hand.
+
 `verify.mjs` loads `playwright-core` from `~/.pi/agent/npm/node_modules` and reads `CHROMIUM` for the browser path. `scripts/decks/out/` is git-ignored.
 
-## OG image and favicons
+## OG images and favicons
+
+`astro build` renders one 1200x630 PNG per page under `/og/`: the EN and ES home pages, the two writing indexes, each post and each deck. No browser is needed, so this runs on Vercel. The 404 page uses the home image. Change the design in `src/lib/og.ts`.
 
 ```sh
-pnpm og                        # renders public/og.png, favicon-32.png, favicon.ico, apple-touch-icon.png
+pnpm favicons                  # renders favicon-32.png, favicon.ico, apple-touch-icon.png with Helium
 ```
 
 ## Tests
