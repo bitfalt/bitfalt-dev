@@ -404,7 +404,8 @@ function shell() {
     if (!openTab(url)) line(`${esc(t.popup)} ${ext(label + ' ↗', url)}`, 'a-dim');
   };
   const norm = (s: string) => s.replace(/^~\//, '').replace(/\/$/, '');
-  const known = (['experience', 'oss', 'talks', 'writing', 'heat'] as const).map(k => ({ k, c: sectionCommand(k, lang) }));
+  const postCount = Number(document.getElementById('writing')!.dataset['posts']);
+  const known = (['experience', 'oss', 'talks', 'writing', 'heat'] as const).map(k => ({ k, c: sectionCommand(k, lang, postCount) }));
 
   const exec = (raw: string) => {
     const cmd = raw.trim();
@@ -437,7 +438,7 @@ function shell() {
       if (s === 'oss') return void line(oss.map(o => `<button type="button" class="a-ls" data-run="cat ${o.id}">${o.id}</button>`).join(''));
       if (s === 'talks') return void line(talks.map(k => `<button type="button" class="a-ls" data-run="open ${k.n}">${k.slug}.deck</button>`).join(''));
       if (s === 'experience') return lines(experience.map(e => `${e.org.padEnd(12)} ${e.role}`));
-      if (s === 'writing') return void line(esc(sectionCommand('writing', lang, document.querySelectorAll('#writing a.a-name').length).out[0]), 'a-dim');
+      if (s === 'writing') return void line(esc(sectionCommand('writing', lang, postCount).out[0]), 'a-dim');
       return void line(esc(fmt(t.noSection, { s: target })), 'a-err');
     }
     if (c === 'cd') {

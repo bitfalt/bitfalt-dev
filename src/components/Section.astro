@@ -6,7 +6,7 @@ import Cmd from './Cmd.astro';
 interface Props { id: Section; n: number; lang: Lang; postCount?: number }
 const { id, n, lang, postCount = 0 } = Astro.props;
 ---
-<section class="a-sec" id={id} aria-labelledby={`${id}-h`}>
+<section class="a-sec" id={id} aria-labelledby={`${id}-h`} data-posts={id === 'writing' ? postCount : undefined}>
   <div class="a-sh"><span class="a-ps" aria-hidden="true">~/bitfalt $ cd {id}</span><h2 id={`${id}-h`}><span class="a-n" aria-hidden="true">{pad2(n)}</span>{ui[lang][id]}</h2></div>
   <Cmd k={id} lang={lang} postCount={postCount} />
   <slot />
