@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../components/Home.astro';
+import { person } from '../../data/site';
+import { ui } from '../../i18n';
+import { posts } from '../../lib/posts';
+
+const lang = 'es';
+const list = await posts(lang);
+---
+<Base lang={lang} title={ui[lang].metaTitle} description={`${ui[lang].heroLine} ${person.summary[lang]}`} alternates={{ en: '/', es: '/es/' }} bootable>
+  <Home lang={lang} posts={list} />
+</Base>
+<script src="../../scripts/app.ts"></script>

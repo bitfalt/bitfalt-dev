@@ -1,0 +1,20 @@
+---
+import type { Lang } from '../data/site';
+import { mon, ui } from '../i18n';
+import { postHref, type Post } from '../lib/posts';
+import Section from './Section.astro';
+
+interface Props { lang: Lang; posts: Post[] }
+const { lang, posts } = Astro.props;
+const t = ui[lang];
+---
+<Section id="writing" n={5} lang={lang} postCount={posts.length}>
+  <ul class="a-list">{posts.length === 0
+    ? <li class="a-it"><span class="a-b" aria-hidden="true">[ ]</span><div><span class="a-name">{t.emptyWriting}</span><p class="a-p">{t.emptyWritingSub}</p></div></li>
+    : posts.map(p => (
+      <li class="a-it"><span class="a-b" aria-hidden="true">[*]</span><div>
+        <div class="a-row"><a class="a-name" href={postHref(p)}>{p.data.title}</a><time class="a-meta" datetime={p.data.date.toISOString().slice(0, 10)}>{mon(lang, p.data.date.toISOString().slice(0, 7))}</time></div>
+        <p class="a-p">{p.data.summary}</p>
+      </div></li>
+    ))}</ul>
+</Section>

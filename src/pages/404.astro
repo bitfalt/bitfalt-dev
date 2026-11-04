@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import { ui } from '../i18n';
+
+const t = ui.en;
+---
+<Base lang="en" title={t.notFoundTitle} description={t.notFoundSub} noindex>
+  <section class="a-plain" aria-labelledby="nf-h">
+    <p class="a-ps" aria-hidden="true">~/bitfalt $ cd <span data-path>…</span></p>
+    <h1 id="nf-h">404</h1>
+    <div class="a-cmdl">
+      <pre class="a-cmdl-o a-err" data-nf>{t.notFoundLine.replace('{path}', '…')}</pre>
+      <p class="a-p">{t.notFoundSub} <span lang="es">{ui.es.notFoundSub}</span></p>
+    </div>
+    <div class="a-links"><a href="/">{t.backHome} ↗</a><a href="/es/" lang="es">cd ~/es</a></div>
+  </section>
+</Base>
+<script>
+  import { ui } from '../i18n';
+  const path = location.pathname;
+  document.querySelector('[data-path]')!.textContent = path;
+  document.querySelector('[data-nf]')!.textContent = ui.en.notFoundLine.replace('{path}', path);
+</script>
+<script src="../scripts/app.ts"></script>

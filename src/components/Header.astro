@@ -1,0 +1,28 @@
+---
+import { SECTIONS, type Lang } from '../data/site';
+import { homePath, pad2, ui } from '../i18n';
+
+interface Props { lang: Lang; alternates?: { en: string; es: string } | undefined }
+const { lang, alternates } = Astro.props;
+const t = ui[lang];
+const home = homePath(lang);
+const langHref = { en: alternates?.en ?? '/', es: alternates?.es ?? '/es/' };
+---
+<a class="skip" href="#main">{t.skip}</a>
+<header class="hdr" data-hdr>
+  <div class="hdr-in">
+    <a class="hdr-mark" href={`${home}#top`} data-jump="top" aria-label={`bitfalt, ${t.top}`}><span aria-hidden="true"><b>~/</b>bitfalt<i class="caret"></i></span></a>
+    <nav class="hdr-nav" aria-label={t.sections} data-nav>
+      <button type="button" class="hdr-menu" aria-expanded="false" aria-controls="hdr-list" data-menu><span class="sr-only">{t.sectionsMenu}: </span><span class="hdr-menu-p" aria-hidden="true">cd ~/</span><span class="hdr-menu-l" data-menu-label>{t.sections}</span><span class="hdr-menu-c" aria-hidden="true">▾</span></button>
+      <div class="hdr-track"><ol id="hdr-list">{SECTIONS.map((id, i) => (
+        <li><a href={`${home}#${id}`} data-sec={id}><span class="n" aria-hidden="true">{pad2(i + 1)}</span><span class="l">{t[id]}</span></a></li>
+      ))}</ol><span class="hdr-ind" aria-hidden="true"></span></div>
+    </nav>
+    <div class="hdr-tools">
+      <div class="hdr-lang" role="group" aria-label={t.langLabel}>
+        <a href={langHref.en} data-lang="en" lang="en" hreflang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a><a href={langHref.es} data-lang="es" lang="es" hreflang="es" aria-current={lang === 'es' ? 'true' : undefined}>ES</a>
+      </div>
+      <button type="button" class="hdr-k" data-palette aria-keyshortcuts="Meta+K Control+K" aria-label={t.openPalette}><kbd data-kbd>⌘K</kbd></button>
+    </div>
+  </div>
+</header>
