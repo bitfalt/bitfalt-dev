@@ -5,7 +5,9 @@ Usage:  python3 build-public-decks.py TALK_DIR OUTPUT.html [--title "Stellar Ses
 
 Runs TALK_DIR/build-standalone.py on a temp copy (it writes next to itself),
 then strips speaker notes, the notes and index panels, their buttons, CSS and
-N/O key handlers. Without --title, the title is "Stellar Sessions #N · <deck title>"
+N/O key handlers. It injects the SEO head (description, canonical, OG, Twitter,
+JSON-LD, theme-color, favicons) from deck-head.ts, which reads src/data/site.ts.
+Without --title, the title is "Stellar Sessions #N · <deck title>"
 with N taken from an output name like stellar-sessions-N.html.
 """
 import argparse
@@ -145,6 +147,29 @@ def build_standalone(talk: pathlib.Path) -> str:
         return (work / "presentacion.html").read_text()
 
 
+HERE = pathlib.Path(__file__).resolve().parent
+REPO = HERE.parent.parent
+
+
+def theme_color(doc: str) -> str:
+    bg = re.search(r"html, body \{[^}]*background(?:-color)?: var\((--[\w-]+)\)", doc)
+    if not bg:
+        sys.exit("No html, body background variable in the built deck")
+    value = re.search(re.escape(bg.group(1)) + r": (#[0-9a-fA-F]{3,8})", doc)
+    if not value:
+        sys.exit(f"No hex value for {bg.group(1)}")
+    return value.group(1)
+
+
+def seo_head(slug: str, title: str, color: str) -> str:
+    node = shutil.which("node")
+    if not node:
+        sys.exit("node is required for deck-head.ts")
+    out = subprocess.run([node, str(HERE / "deck-head.ts"), slug, title, color],
+                         check=True, cwd=REPO, capture_output=True, text=True)
+    return out.stdout
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("talk", type=pathlib.Path)
@@ -158,17 +183,18 @@ def main() -> None:
     doc = strip_styles(doc)
     doc = strip_js(doc)
 
+    slug = re.search(r"stellar-sessions-\d+", args.output.name)
+    if not slug:
+        sys.exit("Name the output stellar-sessions-N.html")
     found = re.search(r"<title>(.*?)</title>", doc)
     if not found:
         sys.exit("No <title> in the built deck")
     deck_title = html.unescape(found.group(1))
     title = args.title
     if not title:
-        m = re.search(r"stellar-sessions-(\d+)", args.output.name)
-        if not m:
-            sys.exit("Pass --title or name the output stellar-sessions-N.html")
-        title = f"Stellar Sessions #{m.group(1)} · {deck_title}"
-    doc = re.sub(r"<title>.*?</title>", f"<title>{html.escape(title, quote=False)}</title>", doc, count=1)
+        title = f"Stellar Sessions #{slug.group(0).rsplit('-', 1)[1]} · {deck_title}"
+    head = seo_head(slug.group(0), title, theme_color(doc))
+    doc = re.sub(r"<title>.*?</title>", lambda _: f"<title>{html.escape(title, quote=False)}</title>\n{head}", doc, count=1)
     doc = doc.replace('<meta name="viewport"', '<meta name="robots" content="index">\n<meta name="viewport"', 1)
 
     leaks = [m for m in LEAK_MARKERS if m in doc]
