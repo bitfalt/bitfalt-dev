@@ -160,8 +160,8 @@ code{font:inherit;color:var(--fg)}
 .a-help dt{color:var(--fg)}
 .a-help dd{margin:0;color:var(--fg3)}
 .a-ls{display:inline-flex;align-items:center;min-height:32px;margin:0 6px 4px 0;padding:0 8px;background:none;border:1px solid var(--rule);border-radius:4px;color:var(--fg);cursor:pointer;font-size:13px;position:relative}
-/* The hit area paints under every button box (z-index:-1), so each visible button stays its own target where two areas meet. The line box would cover the areas, so only its children take the pointer. */
-.a-ls::before{content:"";position:absolute;inset:-7.5px -3px;z-index:-1}
+/* The hit area paints under every button box (z-index:-2), so each visible button stays its own target where two areas meet. The line box would cover the areas, so only its children take the pointer. */
+.a-ls::before{content:"";position:absolute;inset:-7.5px -3px;z-index:-2}
 .a-l:has(>.a-ls){isolation:isolate;pointer-events:none}
 .a-l:has(>.a-ls)>*{pointer-events:auto}
 @media (hover:hover) and (pointer:fine){.a-ls:hover{border-color:var(--accent);color:var(--accent)}}
@@ -178,6 +178,8 @@ code{font:inherit;color:var(--fg)}
 .a-chips button::before{content:"";position:absolute;inset:-7px -2px}
 @media (hover:hover) and (pointer:fine){.a-chips button:hover{color:var(--accent);border-color:var(--accent)}}
 .a-chips button:active,.a-ls:active{transform:scale(0.96)}
+/* The transform makes a pressed button a stacking context that holds its hit area. z-index:-1 keeps it under the neighbor boxes and over their hit areas. */
+.a-ls:active{z-index:-1}
 .a-term[data-booting] .a-form,.a-term[data-booting] .a-chips{opacity:0.35}
 .a-burst{position:absolute;width:0;height:0;pointer-events:none;z-index:2}
 .a-burst span{position:absolute;left:-0.3em;top:-0.6em;color:var(--gold);font-weight:700;font-size:13px;line-height:1;opacity:0;animation:pop 900ms cubic-bezier(0.23,1,0.32,1) forwards}

@@ -103,6 +103,29 @@ for (const { lang, path } of LANGS) {
     expect(fails).toEqual([]);
     expect(conflicts.sort()).toEqual([...GEOMETRY_CONFLICTS].sort());
   });
+
+  test(`a pressed shell button keeps off its neighbors (${lang})`, async ({ page, errors }) => {
+    void errors;
+    await open(page, path);
+    const buttons = page.locator('[data-out] .a-ls');
+    const count = await buttons.count();
+    expect(count).toBeGreaterThan(1);
+    const fails: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const button = buttons.nth(i);
+      await button.evaluate(el => el.scrollIntoView({ block: 'center' }));
+      const b = (await button.boundingBox())!;
+      await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+      await page.mouse.down();
+      expect(await button.evaluate(el => el.matches(':active'))).toBe(true);
+      const run = await button.getAttribute('data-run');
+      const r = await scan(page, ['shell'], { probes: false, scroll: false });
+      fails.push(...r.fails.map(f => `pressed ${run}: ${f}`));
+      await page.mouse.move(1, 1);
+      await page.mouse.up();
+    }
+    expect(fails).toEqual([]);
+  });
 }
 
 test('the edge scan rejects a strip that steals a neighbor link', async ({ page, width, errors }) => {
