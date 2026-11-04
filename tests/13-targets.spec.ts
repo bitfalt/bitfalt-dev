@@ -1,6 +1,7 @@
 import { test, expect, open, LANGS } from './fixtures';
 import type { Page } from '@playwright/test';
 
+// `size` controls must reach 44px along the axial probes. Every control must own its whole visible box.
 const CONTROLS: Record<string, { sel: string; size: boolean }> = {
   lang: { sel: '.hdr-lang a', size: true },
   palette: { sel: '.hdr-k', size: true },
@@ -8,6 +9,8 @@ const CONTROLS: Record<string, { sel: string; size: boolean }> = {
   shell: { sel: '[data-out] .a-ls', size: true },
   input: { sel: '#a-cmd', size: true },
   link: { sel: 'main .a-links a', size: true },
+  social: { sel: '.a-kv dd a:not(.a-mail)', size: false },
+  mail: { sel: '.a-mail', size: false },
 };
 const R = 22;
 const STEP = 2;

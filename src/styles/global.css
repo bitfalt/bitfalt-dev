@@ -129,6 +129,9 @@ code{font:inherit;color:var(--fg)}
 .a-mail{background:none;border:0;padding:0;cursor:pointer;color:var(--fg);text-decoration:underline dashed var(--fg3);text-underline-offset:4px;position:relative}
 .v main a.a-mail{text-decoration-color:var(--fg3)}
 .a-mail::before{content:"";position:absolute;inset:-13px -4px}
+/* The social links sit above the email hit area, so each keeps its whole box. Inline text misses about 1px at a link's right edge, so each link fills its box. */
+.a-kv dd>a:not(.a-mail){position:relative;z-index:1}
+.a-kv dd>a:not(.a-mail)::before{content:"";position:absolute;inset:0}
 @media (hover:hover) and (pointer:fine){.a-mail:hover{color:var(--accent)}}
 
 .a-term{position:relative;overflow:hidden;background:var(--bg2);border:1px solid var(--rule);border-radius:8px;box-shadow:0 1px 0 oklch(1 0 0 / 0.04) inset,0 24px 48px oklch(0 0 0 / 0.35),0 4px 12px oklch(0 0 0 / 0.2)}
