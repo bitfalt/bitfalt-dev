@@ -52,6 +52,7 @@ export const es: UI = {
   ogContrib: '{n} contribuciones',
   ogHomeAlt: `Tarjeta de terminal de ${person.name} (${person.handle}): “${heroLead}” Muestra los proyectos premiados en hackatones ${winnerNames.join(', ')} junto a un mapa verde de contribuciones de GitHub.`,
   ogWritingAlt: `Tarjeta de terminal de Escritos de ${person.name} (${person.handle}): el comando ls ~/writing, las últimas entradas y un mapa verde de contribuciones de GitHub.`,
+  ogWritingEmptyAlt: `Tarjeta de terminal de Escritos de ${person.name} (${person.handle}): el comando ls ~/writing, la línea “Todavía no hay nada publicado.” y un mapa verde de contribuciones de GitHub.`,
   ogPostAlt: `Tarjeta de la entrada “{title}” de ${person.name} (${person.handle}), {date}.`,
   backHome: 'cd ~',
   notFoundTitle: '404 · No encontrado',

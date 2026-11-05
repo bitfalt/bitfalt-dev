@@ -51,6 +51,7 @@ export const en = {
   ogContrib: '{n} contributions',
   ogHomeAlt: `Terminal card for ${person.name} (${person.handle}): “${heroLead}” It lists the prize-winning hackathon projects ${winnerNames.join(', ')} next to a green GitHub contribution heatmap.`,
   ogWritingAlt: `Terminal card for Writing by ${person.name} (${person.handle}): the command ls ~/writing, the latest posts and a green GitHub contribution heatmap.`,
+  ogWritingEmptyAlt: `Terminal card for Writing by ${person.name} (${person.handle}): the command ls ~/writing, the line “Nothing published yet.” and a green GitHub contribution heatmap.`,
   ogPostAlt: `Card for the post “{title}” by ${person.name} (${person.handle}), {date}.`,
   backHome: 'cd ~',
   notFoundTitle: '404 · Not found',

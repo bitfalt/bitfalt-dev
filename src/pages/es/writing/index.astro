@@ -9,7 +9,7 @@ const lang = 'es';
 const list = await posts(lang);
 const t = ui[lang];
 ---
-<Base lang={lang} title={t.writingTitle} description={t.writingDescription} image={ogImage('es/writing')} imageAlt={t.ogWritingAlt} jsonLd={blogLd(lang, t.writingTitle, t.writingDescription, '/es/writing/')} alternates={{ en: '/writing/', es: '/es/writing/' }}>
+<Base lang={lang} title={t.writingTitle} description={t.writingDescription} image={ogImage('es/writing')} imageAlt={list.length ? t.ogWritingAlt : t.ogWritingEmptyAlt} jsonLd={blogLd(lang, t.writingTitle, t.writingDescription, '/es/writing/')} alternates={{ en: '/writing/', es: '/es/writing/' }}>
   <div class="a-plain"><WritingIndex lang={lang} posts={list} /></div>
 </Base>
 <script src="../../../scripts/app.ts"></script>
