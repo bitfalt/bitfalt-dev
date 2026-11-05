@@ -1,14 +1,15 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Home from '../../components/Home.astro';
-import { person } from '../../data/site';
 import { ui } from '../../i18n';
 import { posts } from '../../lib/posts';
+import { homeLd, ogImage } from '../../lib/seo';
 
 const lang = 'es';
 const list = await posts(lang);
+const t = ui[lang];
 ---
-<Base lang={lang} title={ui[lang].metaTitle} description={`${ui[lang].heroLine} ${person.summary[lang]}`} alternates={{ en: '/', es: '/es/' }} bootable>
+<Base lang={lang} title={t.metaTitle} description={t.metaDescription} image={ogImage('es/index')} imageAlt={t.ogHomeAlt} jsonLd={homeLd(lang, t.metaTitle, '/es/')} alternates={{ en: '/', es: '/es/' }} bootable>
   <Home lang={lang} posts={list} />
 </Base>
 <script src="../../scripts/app.ts"></script>

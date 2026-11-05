@@ -13,14 +13,16 @@
     "preview": "astro preview --ignore-lock",
     "test": "sh scripts/test-each.sh",
     "contributions": "node scripts/fetch-contributions.mjs",
-    "og": "node scripts/og-image.mjs",
+    "favicons": "node scripts/favicons.mjs",
     "test:file": "playwright test --workers=1",
     "decks:verify": "node scripts/decks/verify.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.4.5"
+    "@resvg/resvg-js": "2.6.2",
+    "astro": "^7.4.5",
+    "satori": "0.63.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",

@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     baseURL: `http://127.0.0.1:${PORT}`,
-    launchOptions: { executablePath: process.env['CHROMIUM'] || '/Applications/Helium.app/Contents/MacOS/Helium' },
+    launchOptions: process.env['CHROMIUM'] ? { executablePath: process.env['CHROMIUM'] } : {},
     headless: true,
     permissions: ['clipboard-read', 'clipboard-write'],
   },

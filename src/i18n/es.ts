@@ -1,7 +1,9 @@
-import { bothTracks, currentJob, person, winnerCount } from '../data/site';
+import { bothTracks, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
 import type { UI } from './en';
 
 const { email } = person;
+const heroLead = 'Construyo infraestructura en Rust: exchanges, plataformas de IA, blockchains.';
+const winnerNames = hackathonGroups().winners.map(h => h.name);
 const { degree, school } = person.study;
 
 export const es: UI = {
@@ -30,7 +32,8 @@ export const es: UI = {
   dayCountOne: '{n} contribución el {d}',
   dayCountMany: '{n} contribuciones el {d}',
   heatKeys: 'Las flechas mueven por día y por semana.',
-  heroLine: 'Construyo infraestructura en Rust: exchanges, plataformas de IA, blockchains. Hackatones en paralelo. Pura vida en el medio.',
+  heroLead,
+  heroLine: `${heroLead} Hackatones en paralelo. Pura vida en el medio.`,
   now: 'ahora', study: 'estudio', based: 'base', stack: 'stack', reach: 'contacto',
   nowVal: `${currentJob.role} en ${currentJob.org}`,
   footer: 'Datos del currículum, octubre de 2026.',
@@ -42,9 +45,15 @@ export const es: UI = {
   talksNote: '# las tres en español',
   shellOutput: 'Salida de la shell',
   coverAlt: 'Portada de Stellar Sessions #{n}',
-  metaTitle: 'Daniel Garbanzo (bitfalt) · Ingeniero de infraestructura en Rust',
+  metaTitle: 'Daniel Garbanzo (bitfalt) · Infraestructura en Rust',
   writingTitle: 'Escritos · Daniel Garbanzo (bitfalt)',
-  writingDescription: 'Entradas de Daniel Garbanzo (bitfalt).',
+  writingDescription: `Escritos de ${person.name} (${person.handle}), ${currentJob.role} en ${currentJob.org}, ${person.country}. Construye infraestructura en Rust: exchanges, plataformas de IA, blockchains.`,
+  metaDescription: `${person.name} (${person.handle}), ${currentJob.role} en ${currentJob.org}, ${person.country}. ${heroLead}`,
+  ogContrib: '{n} contribuciones',
+  ogHomeAlt: `Tarjeta de terminal de ${person.name} (${person.handle}): “${heroLead}” Muestra los proyectos premiados en hackatones ${winnerNames.join(', ')} junto a un mapa verde de contribuciones de GitHub.`,
+  ogWritingAlt: `Tarjeta de terminal de Escritos de ${person.name} (${person.handle}): el comando ls ~/writing, las últimas entradas y un mapa verde de contribuciones de GitHub.`,
+  ogWritingEmptyAlt: `Tarjeta de terminal de Escritos de ${person.name} (${person.handle}): el comando ls ~/writing, la línea “Todavía no hay nada publicado.” y un mapa verde de contribuciones de GitHub.`,
+  ogPostAlt: `Tarjeta de la entrada “{title}” de ${person.name} (${person.handle}), {date}.`,
   backHome: 'cd ~',
   notFoundTitle: '404 · No encontrado',
   notFoundLine: 'cd: {path}: no existe ese archivo o directorio',
