@@ -81,7 +81,7 @@ pnpm favicons                  # renders favicon-32.png, favicon.ico, apple-touc
 
 ## Tests
 
-Playwright runs against `astro preview` of `dist/`. It uses Helium by default. Set `CHROMIUM` to use another Chromium binary.
+Playwright runs against `astro preview` of `dist/`. It uses Playwright's own Chromium headless shell. Install it once with `pnpm exec playwright install chromium-headless-shell`. Set `CHROMIUM` to use another Chromium binary. Do not point it at Helium: Helium's built-in uBlock Origin can reload a tab just after load, and `--disable-extensions` does not turn it off.
 
 ```sh
 pnpm build
