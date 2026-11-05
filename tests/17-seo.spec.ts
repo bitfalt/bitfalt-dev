@@ -31,6 +31,7 @@ for (const c of CASES) {
         og: Object.fromEntries(['og:title', 'og:description', 'og:url', 'og:image', 'og:image:secure_url', 'og:image:type', 'og:image:width', 'og:image:height', 'og:image:alt', 'og:locale', 'og:locale:alternate', 'twitter:card', 'twitter:creator', 'twitter:image'].map(k => [k, meta(k)])),
         ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map(s => s.textContent ?? ''),
         robots: meta('robots'),
+        posts: document.querySelectorAll('main a.a-name').length,
       };
     });
 
@@ -55,6 +56,13 @@ for (const c of CASES) {
     expect(og['twitter:card']![0]).toBe('summary_large_image');
     expect(og['twitter:creator']![0]).toBe('@bitfalt');
     expect(og['og:image:type']![0]).toBe('image/png');
+    if (c.ld === 'Blog') {
+      const emptyPhrase = c.path.startsWith('/es/') ? 'Todavía no hay nada publicado.' : 'Nothing published yet.';
+      const latestPhrase = c.path.startsWith('/es/') ? 'las últimas entradas' : 'the latest posts';
+      const alt = og['og:image:alt']![0]!;
+      expect(alt.includes(emptyPhrase), alt).toBe(head.posts === 0);
+      expect(alt.includes(latestPhrase), alt).toBe(head.posts > 0);
+    }
     expect([og['og:image:width']![0], og['og:image:height']![0]]).toEqual(['1200', '630']);
 
     const image = og['og:image']![0]!;
@@ -106,13 +114,13 @@ test('every OG image the build emits is a 1200x630 PNG under 300 KB', async ({ p
   }
 });
 
-test('the sitemap lists every page with lastmod and robots.txt points to it', async ({ request }) => {
+test('the sitemap lists every page without build-time lastmod and robots.txt points to it', async ({ request }) => {
   const sm = await (await request.get('/sitemap-0.xml')).text();
   const urls = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
   for (const p of ['/', '/es/', '/writing/', '/es/writing/', '/talks/stellar-sessions-1', '/talks/stellar-sessions-2', '/talks/stellar-sessions-3']) {
     expect(urls).toContain(`${SITE}${p}`);
   }
-  expect(sm.match(/<lastmod>/g)?.length).toBe(urls.length);
+  expect(sm).not.toContain('<lastmod>');
   expect(urls.some(u => u!.includes('/og/') || u!.includes('404'))).toBe(false);
   expect(await (await request.get('/robots.txt')).text()).toContain(`Sitemap: ${SITE}/sitemap-index.xml`);
 });
