@@ -1,4 +1,5 @@
 import { deckMeta, headTags } from '../../src/lib/seo.ts';
+import { ANALYTICS_HEAD } from '../../src/lib/analytics.ts';
 
 const [slug, title, themeColor] = process.argv.slice(2);
 if (!slug || !title || !themeColor) throw new Error('Usage: node deck-head.ts SLUG TITLE THEME_COLOR');
@@ -9,4 +10,5 @@ process.stdout.write([
   '<link rel="icon" href="/favicon.svg" type="image/svg+xml">',
   '<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">',
   '<link rel="apple-touch-icon" href="/apple-touch-icon.png">',
+  ANALYTICS_HEAD,
 ].join('\n'));

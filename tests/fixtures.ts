@@ -28,6 +28,7 @@ export const test = base.extend<Fixtures>({
   },
   page: async ({ page, booted }, use) => {
     if (booted) await page.addInitScript(() => { sessionStorage.setItem('bf-booted', '1'); });
+    await page.route('**/_vercel/insights/**', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
     await use(page);
   },
 });

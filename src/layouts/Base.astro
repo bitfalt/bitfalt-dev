@@ -4,6 +4,7 @@ import type { Lang } from '../data/site';
 import { ui } from '../i18n';
 import Header from '../components/Header.astro';
 import { abs, headTags, type JsonLd } from '../lib/seo';
+import { ANALYTICS_HEAD } from '../lib/analytics';
 
 interface Props {
   lang: Lang;
@@ -30,6 +31,7 @@ const head = headTags({ lang, title, description, canonical, image, imageAlt, js
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{title}</title>
 <Fragment set:html={head} />
+<Fragment set:html={ANALYTICS_HEAD} />
 {noindex && <meta name="robots" content="noindex">}
 <meta name="theme-color" content="#0d0e10">
 <meta name="color-scheme" content="dark">
