@@ -1,5 +1,5 @@
-import { test, expect, open, LANGS } from './fixtures';
-import type { Page } from '@playwright/test';
+import { e2e, expect, open, LANGS } from './harness';
+import type { Page } from 'playwright';
 
 // `size` controls must reach 44px along the axial probes. Every control must own its whole visible box.
 const CONTROLS: Record<string, { sel: string; size: boolean }> = {
@@ -94,9 +94,8 @@ async function scan(page: Page, names = Object.keys(CONTROLS), opts: { probes: b
 }
 
 for (const { lang, path } of LANGS) {
-  test(`44px hit areas at 390px own their visible boxes (${lang})`, async ({ page, width, errors }) => {
+  e2e(`44px hit areas at 390px own their visible boxes (${lang})`, { only: 'mobile' }, async ({ page, errors }) => {
     void errors;
-    test.skip(width !== 390, 'touch targets are checked at 390px');
     await open(page, path);
     await page.evaluate(() => document.querySelectorAll('details').forEach(d => (d.open = true)));
     const { fails, conflicts } = await scan(page);
@@ -104,7 +103,7 @@ for (const { lang, path } of LANGS) {
     expect(conflicts.sort()).toEqual([...GEOMETRY_CONFLICTS].sort());
   });
 
-  test(`a pressed shell button keeps off its neighbors (${lang})`, async ({ page, errors }) => {
+  e2e(`a pressed shell button keeps off its neighbors (${lang})`, async ({ page, errors }) => {
     void errors;
     await open(page, path);
     const buttons = page.locator('[data-out] .a-ls');
@@ -128,9 +127,8 @@ for (const { lang, path } of LANGS) {
   });
 }
 
-test('the edge scan rejects a strip that steals a neighbor link', async ({ page, width, errors }) => {
+e2e('the edge scan rejects a strip that steals a neighbor link', { only: 'mobile' }, async ({ page, errors }) => {
   void errors;
-  test.skip(width !== 390, 'the overlap is checked at 390px');
   await open(page, '/');
   await page.addStyleTag({ content: PARQUIZ_OVERLAP });
   const { fails } = await scan(page, ['link']);

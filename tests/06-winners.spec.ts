@@ -1,8 +1,8 @@
-import { test, expect, open, SHOTS, HIDE } from './fixtures';
+import { e2e, expect, open, poll, SHOTS, HIDE } from './harness';
 
 const WINNERS = ['parquiz', 'veilescrow', 'buildmyevent'];
 
-test('winner celebration fires on the three winners only', async ({ page, width, errors }) => {
+e2e('winner celebration fires on the three winners only', async ({ page, width, errors }) => {
   void errors;
   await open(page, '/');
   await page.addStyleTag({ content: HIDE });
@@ -22,13 +22,13 @@ test('winner celebration fires on the three winners only', async ({ page, width,
   const bursts = () => page.evaluate(() => (window as unknown as { bursts: { added: string[]; removed: string[]; particles: number[] } }).bursts);
   for (const id of WINNERS) {
     await page.evaluate(id => { const el = document.getElementById('p-' + id)!; scrollTo(0, el.getBoundingClientRect().top + scrollY - 200); }, id);
-    await expect.poll(async () => (await bursts()).added.includes(id), id).toBe(true);
+    await poll(async () => (await bursts()).added.includes(id), true, { message: id });
     expect(await page.evaluate(id => document.getElementById('p-' + id)!.querySelector('[data-win]')!.classList.contains('a-stamp'), id), id).toBe(true);
     const b = (await page.locator(`#p-${id} [data-win]`).boundingBox())!;
     await page.screenshot({ path: `${SHOTS}${width}-winner-${id}-burst.png`, clip: { x: Math.max(0, b.x - 120), y: Math.max(0, b.y - 90), width: Math.min(width - Math.max(0, b.x - 120), 480), height: 220 } });
   }
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await expect.poll(async () => (await bursts()).removed.length, { timeout: 5000 }).toBe(3);
+  await poll(async () => (await bursts()).removed.length, 3, { timeout: 5000 });
   const log = await bursts();
   expect([...log.added].sort()).toEqual([...WINNERS].sort());
   expect([...log.removed].sort()).toEqual([...WINNERS].sort());

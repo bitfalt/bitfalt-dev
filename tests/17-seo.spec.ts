@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures';
+import { e2e, expect } from './harness';
 
 const SITE = 'https://bitfalt.dev';
 
@@ -18,8 +18,7 @@ const CASES: Case[] = [
 const pngSize = (b: Buffer) => ({ w: b.readUInt32BE(16), h: b.readUInt32BE(20) });
 
 for (const c of CASES) {
-  test(`seo ${c.path}`, async ({ page, request }) => {
-    test.skip(page.viewportSize()!.width < 721, 'head tags do not depend on the viewport');
+  e2e(`seo ${c.path}`, { only: 'desktop' }, async ({ page, request }) => {
     await page.goto(c.path, { waitUntil: 'domcontentloaded' });
     const head = await page.evaluate(() => {
       const meta = (k: string) => [...document.querySelectorAll(`meta[property="${k}"], meta[name="${k}"]`)].map(m => m.getAttribute('content') ?? '');
@@ -102,8 +101,7 @@ for (const c of CASES) {
   });
 }
 
-test('every OG image the build emits is a 1200x630 PNG under 300 KB', async ({ page, request }) => {
-  test.skip(page.viewportSize()!.width < 721, 'viewport independent');
+e2e('every OG image the build emits is a 1200x630 PNG under 300 KB', { only: 'desktop' }, async ({ request }) => {
   const keys = ['index', 'es/index', 'writing', 'es/writing', 'talks/stellar-sessions-1', 'talks/stellar-sessions-2', 'talks/stellar-sessions-3'];
   for (const k of keys) {
     const res = await request.get(`/og/${k}.png`);
@@ -114,7 +112,7 @@ test('every OG image the build emits is a 1200x630 PNG under 300 KB', async ({ p
   }
 });
 
-test('the sitemap lists every page without build-time lastmod and robots.txt points to it', async ({ request }) => {
+e2e('the sitemap lists every page without build-time lastmod and robots.txt points to it', async ({ request }) => {
   const sm = await (await request.get('/sitemap-0.xml')).text();
   const urls = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
   for (const p of ['/', '/es/', '/writing/', '/es/writing/', '/talks/stellar-sessions-1', '/talks/stellar-sessions-2', '/talks/stellar-sessions-3']) {

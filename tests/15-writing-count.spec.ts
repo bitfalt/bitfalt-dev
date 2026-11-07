@@ -1,7 +1,7 @@
-import { test, expect, open, run, LANGS } from './fixtures';
+import { e2e, expect, open, run, LANGS } from './harness';
 
 for (const { lang, path } of LANGS) {
-  test(`shell writing counts match the server-rendered count (${lang})`, async ({ page, errors }) => {
+  e2e(`shell writing counts match the server-rendered count (${lang})`, async ({ page, errors }) => {
     void errors;
     await open(page, path);
     const ssr = await page.$eval('#writing .a-cmdl-o', el => el.textContent!.trim());

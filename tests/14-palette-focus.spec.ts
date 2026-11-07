@@ -1,7 +1,7 @@
-import { test, expect, open, mod, LANGS } from './fixtures';
+import { e2e, expect, open, mod, LANGS } from './harness';
 
 for (const { lang, path } of LANGS) {
-  test(`palette action without a destination returns focus (${lang})`, async ({ page, errors }) => {
+  e2e(`palette action without a destination returns focus (${lang})`, async ({ page, errors }) => {
     void errors;
     await open(page, path);
     await page.focus('#a-cmd');
@@ -15,7 +15,7 @@ for (const { lang, path } of LANGS) {
   });
 }
 
-test('palette action with a destination keeps focus on that destination', async ({ page, errors }) => {
+e2e('palette action with a destination keeps focus on that destination', async ({ page, errors }) => {
   void errors;
   await open(page, '/');
   await page.focus('#a-cmd');

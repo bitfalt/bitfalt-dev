@@ -1,8 +1,8 @@
-import { test, expect, open, run, SHOTS, HIDE } from './fixtures';
+import { e2e, expect, open, run, SHOTS, HIDE } from './harness';
 
 const CMDS = ['help', 'whoami', 'ls', 'cat parquiz', 'open x', 'sudo hire-me', 'socials', 'trophies', 'banner', 'ls ~/hackathons --sort=wins', 'git log --author=bitfalt --oneline', 'open github', 'open 2', 'coffee', 'vim'];
 
-test('shell commands', async ({ page, context, width, errors }) => {
+e2e('shell commands', async ({ page, context, width, errors }) => {
   void errors;
   await context.route(/^https:\/\/(x|github)\.com\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>stub</title>' }));
   await open(page, '/');
@@ -37,7 +37,7 @@ test('shell commands', async ({ page, context, width, errors }) => {
   expect(outs['vim']).toContain(':q!');
 });
 
-test('shell lang command switches route and echoes in the new language', async ({ page, errors }) => {
+e2e('shell lang command switches route and echoes in the new language', async ({ page, errors }) => {
   void errors;
   await open(page, '/');
   await Promise.all([page.waitForURL(/\/es\//), run(page, 'lang es')]);

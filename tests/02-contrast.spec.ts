@@ -1,4 +1,4 @@
-import { test, expect, open, run, mod, LANGS } from './fixtures';
+import { e2e, expect, open, run, mod, LANGS } from './harness';
 
 const contrast = () => {
   const cv = document.createElement('canvas'); cv.width = cv.height = 1;
@@ -34,7 +34,7 @@ const contrast = () => {
 };
 
 for (const { lang, path } of LANGS) {
-  test(`contrast ${lang}: page, palette, menu`, async ({ page, width, errors }) => {
+  e2e(`contrast ${lang}: page, palette, menu`, async ({ page, width, errors }) => {
     void errors;
     await open(page, path);
     for (const c of ['help', 'trophies', 'socials']) await run(page, c);
@@ -55,7 +55,7 @@ for (const { lang, path } of LANGS) {
 }
 
 for (const path of ['/writing/', '/es/writing/', '/does-not-exist']) {
-  test(`contrast ${path}`, async ({ page }) => {
+  e2e(`contrast ${path}`, async ({ page }) => {
     await open(page, path);
     const r = await page.evaluate(contrast);
     expect(r.checked).toBeGreaterThan(5);

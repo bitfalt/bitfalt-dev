@@ -1,10 +1,10 @@
-import { test, expect, open, run, mod, LANGS } from './fixtures';
+import { e2e, expect, open, run, mod, LANGS } from './harness';
 
 const ORDER = ['parquiz', 'veilescrow', 'buildmyevent', 'paralock', 'sigilo', 'gacha-desk', 'echoes-of-the-void'];
 const WINNERS = ORDER.slice(0, 3);
 
 for (const { lang, path } of LANGS) {
-  test(`every surface lists hackathons in one order (${lang})`, async ({ page, errors }) => {
+  e2e(`every surface lists hackathons in one order (${lang})`, async ({ page, errors }) => {
     void errors;
     await open(page, path);
 

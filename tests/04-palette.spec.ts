@@ -1,6 +1,6 @@
-import { test, expect, open, mod, SHOTS } from './fixtures';
+import { e2e, expect, open, mod, SHOTS } from './harness';
 
-test('Cmd+K: project, email, talk, social, language', async ({ page, context, width, errors, notFound }) => {
+e2e('Cmd+K: project, email, talk, social, language', async ({ page, context, width, errors, notFound }) => {
   void errors; void notFound;
   await context.route(/^https:\/\/x\.com\//, r => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>x stub</title>' }));
   await open(page, '/');
@@ -40,7 +40,7 @@ test('Cmd+K: project, email, talk, social, language', async ({ page, context, wi
   expect(await page.evaluate(() => (document.querySelector('.pal') as HTMLElement).hidden)).toBe(true);
 });
 
-test('palette works on the writing page and jumps back home', async ({ page, errors }) => {
+e2e('palette works on the writing page and jumps back home', async ({ page, errors }) => {
   void errors;
   await open(page, '/writing/');
   await page.keyboard.press(`${mod}+k`); await page.keyboard.type('sigilo');

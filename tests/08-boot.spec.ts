@@ -1,10 +1,7 @@
-import { test, expect, SHOTS } from './fixtures';
+import { e2e, expect, SHOTS } from './harness';
 
-test.use({ booted: false });
-
-test('boot runs once per session and Escape skips it', async ({ page, width, errors }) => {
+e2e('boot runs once per session and Escape skips it', { only: 'desktop', booted: false }, async ({ page, width, errors }) => {
   void errors;
-  test.skip(width < 721, 'desktop only');
   await page.goto('/', { waitUntil: 'commit' });
   await page.waitForSelector('[data-skip]:not([hidden])', { timeout: 5000 });
   await page.waitForFunction(() => document.querySelectorAll('[data-out] .a-l').length >= 4);

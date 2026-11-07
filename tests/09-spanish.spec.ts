@@ -1,6 +1,6 @@
-import { test, expect, open, SHOTS, HIDE } from './fixtures';
+import { e2e, expect, open, SHOTS, HIDE } from './harness';
 
-test('Spanish route renders Spanish labels and commands', async ({ page, width, errors }) => {
+e2e('Spanish route renders Spanish labels and commands', async ({ page, width, errors }) => {
   void errors;
   await open(page, '/es/');
   await page.addStyleTag({ content: HIDE });

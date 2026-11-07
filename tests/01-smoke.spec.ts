@@ -1,7 +1,7 @@
-import { test, expect, open, SHOTS, HIDE, LANGS } from './fixtures';
+import { e2e, expect, open, SHOTS, HIDE, LANGS } from './harness';
 
 for (const { lang, path } of LANGS) {
-  test(`smoke ${lang}: screenshots, overflow, heatmap position, hreflang`, async ({ page, width, errors, notFound }) => {
+  e2e(`smoke ${lang}: screenshots, overflow, heatmap position, hreflang`, async ({ page, width, errors, notFound }) => {
     void errors; void notFound;
     await open(page, path);
     await page.addStyleTag({ content: HIDE });

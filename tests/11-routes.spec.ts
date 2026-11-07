@@ -1,12 +1,11 @@
 import { readFileSync } from 'node:fs';
-import { test, expect } from './fixtures';
+import { e2e, expect } from './harness';
 
 const DECKS = [['stellar-sessions-1', 61], ['stellar-sessions-2', 39], ['stellar-sessions-3', 22]] as const;
 
 for (const [slug, slides] of DECKS) {
-  test(`/talks/${slug}: ${slides} slides, no notes, byte-identical`, async ({ page, request, errors }) => {
+  e2e(`/talks/${slug}: ${slides} slides, no notes, byte-identical`, { only: 'desktop' }, async ({ page, request, errors }) => {
     void errors;
-    test.skip(page.viewportSize()!.width < 721, 'desktop only');
     const res = await page.goto(`/talks/${slug}`, { waitUntil: 'domcontentloaded' });
     expect(res!.status()).toBe(200);
     expect(await page.locator('.deck .slide').count()).toBe(slides);
@@ -26,7 +25,7 @@ const ROUTES: [string, number, RegExp?][] = [
 ];
 
 for (const [path, status, body] of ROUTES) {
-  test(`route ${path} -> ${status}`, async ({ request }) => {
+  e2e(`route ${path} -> ${status}`, async ({ request }) => {
     const r = await request.get(path);
     expect(r.status()).toBe(status);
     if (body) expect(await r.text()).toMatch(body);
@@ -34,7 +33,7 @@ for (const [path, status, body] of ROUTES) {
 }
 
 for (const path of ['/writing/', '/es/writing/', '/does-not-exist']) {
-  test(`page ${path}: no console errors, no missing assets`, async ({ page, errors, notFound }) => {
+  e2e(`page ${path}: no console errors, no missing assets`, async ({ page, errors, notFound }) => {
     void errors; void notFound;
     await page.goto(path, { waitUntil: 'networkidle' });
     expect(await page.locator('.hdr').count()).toBe(1);

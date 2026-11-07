@@ -1,12 +1,10 @@
-import { test, expect, LANGS } from './fixtures';
+import { e2e, expect, toBeVisible, LANGS } from './harness';
 import { archive, experience, hackathons, oss, talks } from '../src/data/site';
 
-test.use({ javaScriptEnabled: false });
-
 for (const { lang, path } of LANGS) {
-  test(`no JavaScript ${lang}: every section and fact is in the HTML`, async ({ page }) => {
+  e2e(`no JavaScript ${lang}: every section and fact is in the HTML`, { javaScriptEnabled: false }, async ({ page }) => {
     await page.goto(path);
-    for (const id of ['experience', 'oss', 'hackathons', 'talks', 'writing']) await expect(page.locator(`#${id}`)).toBeVisible();
+    for (const id of ['experience', 'oss', 'hackathons', 'talks', 'writing']) await toBeVisible(page.locator(`#${id}`));
     const text = await page.evaluate(() => { document.querySelectorAll('details').forEach(d => { d.open = true; }); return document.body.innerText; });
     const facts = [
       ...experience.flatMap(e => [e.org, e.role, ...e.bullets.map(b => b[lang])]),

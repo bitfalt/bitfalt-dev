@@ -1,8 +1,6 @@
-import { test, expect, open, run, SHOTS, HIDE } from './fixtures';
+import { e2e, expect, open, run, SHOTS, HIDE } from './harness';
 
-test.use({ reducedMotion: 'reduce', booted: false });
-
-test('reduced motion: no boot, no running animations, instant jumps', async ({ page, width, errors }) => {
+e2e('reduced motion: no boot, no running animations, instant jumps', { reducedMotion: 'reduce', booted: false }, async ({ page, width, errors }) => {
   void errors;
   await open(page, '/');
   await page.addStyleTag({ content: HIDE });

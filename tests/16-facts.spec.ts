@@ -1,4 +1,4 @@
-import { test, expect, open, run, LANGS } from './fixtures';
+import { e2e, expect, open, run, toContainText, LANGS } from './harness';
 
 const EXPECT = {
   en: { now: 'Backend Engineer at Nexus', trophies: 'Prize winners: 3 projects. ParQuiz placed in both tracks.', whoami: 'Now: Backend Engineer at Nexus. Studying: M.S. Computer Science at TEC.' },
@@ -6,7 +6,7 @@ const EXPECT = {
 };
 
 for (const { lang, path } of LANGS) {
-  test(`locale facts render from site data (${lang})`, async ({ page, errors }) => {
+  e2e(`locale facts render from site data (${lang})`, async ({ page, errors }) => {
     void errors;
     await open(page, path);
     const e = EXPECT[lang];
@@ -19,6 +19,6 @@ for (const { lang, path } of LANGS) {
     await run(page, 'whoami');
     expect(await page.innerText('[data-out]')).toContain(e.whoami);
     await run(page, 'sudo hire-me');
-    await expect(page.locator('[data-out]')).toContainText('dagarbanz@proton.me. ');
+    await toContainText(page.locator('[data-out]'), 'dagarbanz@proton.me. ');
   });
 }

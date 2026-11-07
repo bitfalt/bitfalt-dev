@@ -1,9 +1,9 @@
-import { test, expect, open, SHOTS, HIDE, LANGS } from './fixtures';
+import { e2e, expect, open, SHOTS, HIDE, LANGS } from './harness';
 
 const SECS = ['experience', 'oss', 'hackathons', 'talks', 'writing'];
 
 for (const { lang, path } of LANGS) {
-  test(`nav ${lang}: header links land each section and set the indicator`, async ({ page, width, errors }) => {
+  e2e(`nav ${lang}: header links land each section and set the indicator`, async ({ page, width, errors }) => {
     void errors;
     await open(page, path);
     await page.addStyleTag({ content: HIDE });
@@ -34,7 +34,7 @@ for (const { lang, path } of LANGS) {
   });
 }
 
-test('EN/ES toggle goes to the other route and keeps the hash', async ({ page, errors }) => {
+e2e('EN/ES toggle goes to the other route and keeps the hash', async ({ page, errors }) => {
   void errors;
   await open(page, '/#talks');
   await page.click('[data-lang="es"]');
