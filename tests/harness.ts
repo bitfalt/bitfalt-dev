@@ -42,7 +42,9 @@ const shared = await start();
 async function start(): Promise<Run> {
   if (!existsSync('dist/index.html')) throw new Error('dist/ is missing. Run `bun run build` before `bun test`.');
   if (await up()) throw new Error(`Port ${PORT} is already in use. Stop the other server before \`bun test\`.`);
-  const server = Bun.spawn(['node', 'node_modules/astro/bin/astro.mjs', 'preview', '--ignore-lock', '--host', '127.0.0.1', '--port', String(PORT)], { stdout: 'pipe', stderr: 'pipe' });
+  // The shell stops the server when its stdin closes, so the server dies with this process even on a crash.
+  const preview = `node node_modules/astro/bin/astro.mjs preview --ignore-lock --host 127.0.0.1 --port ${PORT}`;
+  const server = Bun.spawn(['sh', '-c', `${preview} </dev/null & pid=$!; trap 'kill $pid' EXIT; cat >/dev/null`], { stdin: 'pipe', stdout: 'ignore', stderr: 'pipe' });
   const stop = () => { server.kill(); };
   process.on('exit', stop);
   for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => { stop(); process.exit(130); });
@@ -62,10 +64,10 @@ async function up() {
 }
 
 afterAll(async () => {
-  await shared.browser.close();
   shared.server.kill();
   await shared.server.exited;
-});
+  await shared.browser.close();
+}, 30_000);
 
 export function e2e(name: string, options: Options, fn: (f: Fixtures) => Promise<void>): void;
 export function e2e(name: string, fn: (f: Fixtures) => Promise<void>): void;
