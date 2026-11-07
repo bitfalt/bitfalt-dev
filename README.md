@@ -4,13 +4,13 @@ The personal site of Daniel Garbanzo (bitfalt): experience, open-source work, ha
 
 ## Run
 
-Requires Node 24 and pnpm.
+Requires bun 1.4.4 and Node 24. bun installs the packages and runs the scripts. `astro check`, `astro build` and `astro preview` run on Node because `astro check` is faster there. `bun run dev` runs Astro on the bun runtime because it starts faster.
 
 ```sh
-pnpm install
-pnpm dev                 # http://localhost:4321
-pnpm build               # astro check + static build into dist/
-pnpm preview             # serve dist/ in the foreground
+bun install
+bun run dev              # http://localhost:4321
+bun run build            # astro check + static build into dist/
+bun run preview          # serve dist/ in the foreground
 ```
 
 ## Layout
@@ -49,7 +49,7 @@ English posts appear at `/writing/<slug>`, in `/rss.xml` and on the home page. S
 
 ```sh
 gh auth status                 # must be logged in
-pnpm contributions             # gh api graphql for login bitfalt -> src/data/contributions.json
+bun run contributions          # gh api graphql for login bitfalt -> src/data/contributions.json
 ```
 
 The build never calls GitHub. Commit the new JSON file.
@@ -63,33 +63,34 @@ cd scripts/decks
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-workshop-talk out/stellar-sessions-1.html
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-x402-talk out/stellar-sessions-2.html
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-web3-onboarding-talk out/stellar-sessions-3.html
-node verify.mjs                # slide count, no notes, arrow navigation
+bun verify.mjs                 # slide count, no notes, arrow navigation
 for n in 1 2 3; do cp out/stellar-sessions-$n.html ../../public/talks/stellar-sessions-$n/index.html; done
 ```
 
 `build-public-decks.py` runs `node deck-head.ts` to inject the description, canonical, OG, Twitter, JSON-LD, theme-color and favicon tags into `<head>`. The tags come from `src/data/site.ts` through `src/lib/seo.ts`. Do not edit the deck HTML by hand.
 
-`verify.mjs` loads `playwright-core` from `~/.pi/agent/npm/node_modules` and reads `CHROMIUM` for the browser path. `scripts/decks/out/` is git-ignored.
+`verify.mjs` uses the repo's `playwright` package (run `bun install` first) and reads `CHROMIUM` for the browser path. It defaults to Helium. `scripts/decks/out/` is git-ignored.
 
 ## OG images and favicons
 
 `astro build` renders one 1200x630 PNG per page under `/og/`: the EN and ES home pages, the two writing indexes, each post and each deck. No browser is needed, so this runs on Vercel. The 404 page uses the home image. Change the design in `src/lib/og.ts`.
 
 ```sh
-pnpm favicons                  # renders favicon-32.png, favicon.ico, apple-touch-icon.png with Helium
+bun run favicons               # renders favicon-32.png, favicon.ico, apple-touch-icon.png with Helium
 ```
 
 ## Tests
 
-Playwright runs against `astro preview` of `dist/`. It uses Playwright's own Chromium headless shell. Install it once with `pnpm exec playwright install chromium-headless-shell`. Set `CHROMIUM` to use another Chromium binary. Do not point it at Helium: Helium's built-in uBlock Origin can reload a tab just after load, and `--disable-extensions` does not turn it off.
+`bun test` runs `tests/*.spec.ts`. The preload `tests/harness.ts` starts one `astro preview` of `dist/` on port 4322 and one Chromium for the whole run, through the `playwright` library. It uses Playwright's own Chromium headless shell. Install it once with `bunx playwright install chromium-headless-shell`. Set `CHROMIUM` to use another Chromium binary. Do not point it at Helium: Helium's built-in uBlock Origin can reload a tab just after load, and `--disable-extensions` does not turn it off.
 
 ```sh
-pnpm build
-pnpm test                      # each tests/*.spec.ts file, one at a time
-pnpm test:file tests/05-shell.spec.ts
+bun run build
+bun test                       # every tests/*.spec.ts file
+bun test tests/05-shell.spec.ts
+bun test -t 'nav en'           # tests whose name matches
 ```
 
-Every file runs at 1440px (`desktop`) and 390px (`mobile`). Screenshots go to `tests/shots/` (git-ignored).
+`e2e(name, options, fn)` in `tests/harness.ts` registers each test once per project: `[desktop]` at 1440px and `[mobile]` at 390px. `options.only` limits a test to one project. Screenshots go to `tests/shots/` (git-ignored). When a test fails, the harness saves a screenshot to `test-results/<project>-<test>.png`.
 
 ## Deploy
 
