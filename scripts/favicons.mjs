@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { chromium } from '@playwright/test';
+import { chromium } from 'playwright';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const favicon = readFileSync(`${root}public/favicon.svg`, 'utf8');

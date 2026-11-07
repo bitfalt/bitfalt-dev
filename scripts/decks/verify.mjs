@@ -1,10 +1,7 @@
-import { createRequire } from "node:module"
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-
-const require = createRequire("/Users/bitfalt/.pi/agent/npm/node_modules/")
-const { chromium } = require("playwright-core")
+import { chromium } from "playwright"
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const TALKS = "/Users/bitfalt/Developer/talks"

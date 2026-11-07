@@ -2,20 +2,19 @@
   "name": "bitfalt-dev",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.9.0",
+  "packageManager": "bun@1.4.4",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "bun --bun astro dev",
     "check": "astro check",
     "build": "astro check && astro build",
     "preview": "astro preview --ignore-lock",
-    "test": "sh scripts/test-each.sh",
-    "contributions": "node scripts/fetch-contributions.mjs",
-    "favicons": "node scripts/favicons.mjs",
-    "test:file": "playwright test --workers=1",
-    "decks:verify": "node scripts/decks/verify.mjs"
+    "test": "bun test",
+    "contributions": "bun scripts/fetch-contributions.mjs",
+    "favicons": "bun scripts/favicons.mjs",
+    "decks:verify": "bun scripts/decks/verify.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
@@ -26,7 +25,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
-    "@playwright/test": "^1.64.1",
+    "@types/bun": "^1.4.4",
+    "playwright": "1.64.1",
     "typescript": "^6.0.3"
   }
 }
