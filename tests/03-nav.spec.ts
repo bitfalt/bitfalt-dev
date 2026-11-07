@@ -1,4 +1,4 @@
-import { e2e, expect, open, SHOTS, HIDE, LANGS } from './harness';
+import { e2e, expect, open, scrollSettled, SHOTS, HIDE, LANGS } from './harness';
 
 const SECS = ['experience', 'oss', 'hackathons', 'talks', 'writing'];
 
@@ -18,7 +18,7 @@ for (const { lang, path } of LANGS) {
         return r.width > 0 && l.scrollWidth <= l.clientWidth + 1 && r.right <= innerWidth && r.left >= 0;
       }, id);
       expect(labelVisible, `${id} label visible`).toBe(true);
-      await page.click(`.hdr-nav a[data-sec="${id}"]`); await page.waitForTimeout(1100);
+      await page.click(`.hdr-nav a[data-sec="${id}"]`); await scrollSettled(page);
       const r = await page.evaluate(id => {
         const top = document.getElementById(id)!.getBoundingClientRect().top;
         const hh = (document.querySelector('[data-hdr]') as HTMLElement).offsetHeight;

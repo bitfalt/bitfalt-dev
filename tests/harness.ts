@@ -135,6 +135,22 @@ export async function open(page: Page, path = '/') {
   await page.waitForFunction(() => document.documentElement.hasAttribute('data-ready'));
 }
 
+/** Waits until scrollY has not changed for `frames` animation frames in a row, so a smooth scroll has ended. */
+export async function scrollSettled(page: Page, { frames = 6, timeout = 5000 } = {}) {
+  const settled = await page.evaluate(({ frames, timeout }) => new Promise<boolean>(resolve => {
+    const end = performance.now() + timeout;
+    let last = scrollY, same = 0;
+    const tick = () => {
+      if (scrollY === last) same++; else { same = 0; last = scrollY; }
+      if (same >= frames) resolve(true);
+      else if (performance.now() > end) resolve(false);
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }), { frames, timeout });
+  expect(settled, `scrollY stable for ${frames} frames within ${timeout} ms`).toBe(true);
+}
+
 export async function run(page: Page, cmd: string) {
   await page.fill('#a-cmd', cmd);
   await page.press('#a-cmd', 'Enter');

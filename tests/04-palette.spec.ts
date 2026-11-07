@@ -1,4 +1,4 @@
-import { e2e, expect, open, mod, SHOTS } from './harness';
+import { e2e, expect, open, mod, scrollSettled, SHOTS } from './harness';
 
 e2e('Cmd+K: project, email, talk, social, language', async ({ page, context, width, errors, notFound }) => {
   void errors; void notFound;
@@ -8,7 +8,7 @@ e2e('Cmd+K: project, email, talk, social, language', async ({ page, context, wid
   expect(await page.evaluate(() => !(document.querySelector('.pal') as HTMLElement).hidden && !!document.activeElement?.closest('.pal'))).toBe(true);
   await page.keyboard.type('parquiz'); await page.waitForTimeout(80);
   await page.screenshot({ path: `${SHOTS}${width}-palette.png` });
-  await page.keyboard.press('Enter'); await page.waitForTimeout(1100);
+  await page.keyboard.press('Enter'); await scrollSettled(page);
   const top = await page.evaluate(() => document.getElementById('p-parquiz')!.getBoundingClientRect().top);
   expect(top).toBeGreaterThan(0);
   expect(top).toBeLessThan(page.viewportSize()!.height);
