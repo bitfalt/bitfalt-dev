@@ -9,8 +9,14 @@ N/O key handlers. It injects the SEO head (description, canonical, OG, Twitter,
 JSON-LD, theme-color, favicons) from deck-head.ts, which reads src/data/site.ts.
 Without --title, the title is "Stellar Sessions #N · <deck title>"
 with N taken from an output name like stellar-sessions-N.html.
+
+It then moves every base64 image and font into public/talks/assets/<sha256>.<ext>
+(PNG becomes lossless WebP when smaller, SVG stays SVG), sets width, height,
+loading and decoding on <img>, and preloads the Latin subset of the display font.
 """
 import argparse
+import base64
+import hashlib
 import html
 import pathlib
 import re
@@ -149,6 +155,119 @@ def build_standalone(talk: pathlib.Path) -> str:
 
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE.parent.parent
+ASSETS = REPO / "public" / "talks" / "assets"
+ASSET_URL = "/talks/assets/"
+
+# (pattern, replacement): WCAG AA (4.5:1) for #btn-prev and #btn-next in decks 1 and 2.
+# At opacity 0.55 the ink #0f1b3d renders as #767e93 on #f4f7fc (3.78:1). 0.62 gives #666f86 (4.68:1).
+# Deck 3 does not match: its buttons have opacity 0 until hover or focus, then 1.
+CSS_EDITS = [
+    (r"(\.nav-btns \{[^}]*opacity: )0\.55;", r"\g<1>0.62;"),
+]
+
+DATA_URI = re.compile(r"data:(image/png|image/svg\+xml|font/woff2);base64,([A-Za-z0-9+/=]+)")
+EXT = {"image/png": "png", "image/svg+xml": "svg", "font/woff2": "woff2"}
+
+WEBP_JS = """
+const sharp = require("sharp")
+const [src, dst] = process.argv.slice(1)
+sharp(src).webp({ lossless: true, effort: 6 }).toFile(dst).catch((e) => { console.error(e); process.exit(1) })
+"""
+
+
+def to_webp(png: bytes) -> bytes:
+    with tempfile.TemporaryDirectory() as tmp:
+        src, dst = pathlib.Path(tmp) / "in.png", pathlib.Path(tmp) / "out.webp"
+        src.write_bytes(png)
+        subprocess.run([shutil.which("node") or "node", "-e", WEBP_JS, str(src), str(dst)], check=True, cwd=REPO)
+        return dst.read_bytes()
+
+
+def image_size(mime: str, data: bytes) -> tuple[int, int]:
+    if mime == "image/png":
+        return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+    box = re.search(rb'viewBox="[\d.]+ [\d.]+ ([\d.]+) ([\d.]+)"', data)
+    if not box:
+        sys.exit("SVG image without viewBox")
+    return round(float(box.group(1))), round(float(box.group(2)))
+
+
+def write_asset(data: bytes, ext: str) -> str:
+    name = f"{hashlib.sha256(data).hexdigest()[:16]}.{ext}"
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    path = ASSETS / name
+    if not path.exists() or path.read_bytes() != data:
+        path.write_bytes(data)
+    return ASSET_URL + name
+
+
+def extract_assets(doc: str) -> tuple[str, list[dict]]:
+    """Replaces each base64 data URI with a root-relative URL to a content-hashed file."""
+    found: dict[str, dict] = {}
+
+    def asset(m: re.Match) -> str:
+        mime, b64 = m.group(1), m.group(2)
+        if b64 in found:
+            return found[b64]["url"]
+        data = base64.b64decode(b64)
+        out, ext = data, EXT[mime]
+        if mime == "image/png":
+            webp = to_webp(data)
+            if len(webp) < len(data):
+                out, ext = webp, "webp"
+        entry = {"url": write_asset(out, ext), "mime": mime, "source": len(data), "size": len(out)}
+        if mime.startswith("image/"):
+            entry["width"], entry["height"] = image_size(mime, data)
+        found[b64] = entry
+        return entry["url"]
+
+    doc = DATA_URI.sub(asset, doc)
+    if ";base64," in doc:
+        sys.exit("A base64 data URI is left in the deck")
+    return doc, list(found.values())
+
+
+def set_img_attrs(doc: str, assets: list[dict]) -> str:
+    sizes = {a["url"]: a for a in assets if "width" in a}
+    first_slide_end = doc.find('<section class="slide', doc.find('<section class="slide') + 1)
+
+    def img(m: re.Match) -> str:
+        tag = m.group(0)
+        src = re.search(r'\ssrc="([^"]+)"', tag)
+        if not src or src.group(1) not in sizes:
+            sys.exit(f"<img> without an extracted asset: {tag[:120]}")
+        a = sizes[src.group(1)]
+        attrs = f' width="{a["width"]}" height="{a["height"]}"'
+        if m.start() > first_slide_end:
+            attrs += ' loading="lazy" decoding="async"'
+        return tag[:4] + attrs + tag[4:]
+
+    return re.sub(r"<img\b(?![^>]*\swidth=)[^>]*>", img, doc)
+
+
+def preload_font(doc: str) -> str:
+    """Preloads the Latin (U+0000-00FF) file of the first family in --display, the font of the cover title."""
+    family = re.search(r"--display:\s*\"([^\"]+)\"", doc)
+    if not family:
+        sys.exit("No --display font family in the deck")
+    urls = []
+    for face in re.findall(r"@font-face\s*\{([^}]*)\}", doc):
+        fam = re.search(r"font-family:\s*'([^']+)'", face)
+        url = re.search(r"url\((/talks/assets/[^)]+\.woff2)\)", face)
+        if fam and url and fam.group(1) == family.group(1) and re.search(r"unicode-range:\s*U\+0000-00FF", face):
+            urls.append(url.group(1))
+    if not urls:
+        sys.exit(f"No Latin @font-face for {family.group(1)}")
+    links = "".join(f'<link rel="preload" href="{u}" as="font" type="font/woff2" crossorigin>\n' for u in dict.fromkeys(urls))
+    return doc.replace("<title>", links + "<title>", 1)
+
+
+def edit_css(doc: str) -> str:
+    for pattern, repl in CSS_EDITS:
+        doc = re.sub(pattern, repl, doc, count=1)
+    # Width and height attributes reserve space while an image loads. This rule keeps the CSS
+    # width in charge of the height, as it was before the attributes, without beating any deck rule.
+    return doc.replace("</style>", ":where(img) { height: auto; }\n</style>", 1)
 
 
 def theme_color(doc: str) -> str:
@@ -197,6 +316,11 @@ def main() -> None:
     doc = re.sub(r"<title>.*?</title>", lambda _: f"<title>{html.escape(title, quote=False)}</title>\n{head}", doc, count=1)
     doc = doc.replace('<meta name="viewport"', '<meta name="robots" content="index">\n<meta name="viewport"', 1)
 
+    doc, assets = extract_assets(doc)
+    doc = set_img_attrs(doc, assets)
+    doc = preload_font(doc)
+    doc = edit_css(doc)
+
     leaks = [m for m in LEAK_MARKERS if m in doc]
     notes = note_paragraphs((talk / "index.html").read_text())
     plain = html.unescape(doc)
@@ -208,6 +332,8 @@ def main() -> None:
     args.output.write_text(doc)
     print(f"{args.output.name}: {args.output.stat().st_size / 1024:.0f} KB, "
           f"removed {removed} elements, {len(notes)} note paragraphs absent, title={title!r}")
+    for a in assets:
+        print(f"  {a['url']}  {a['mime']}  {a['source'] / 1024:.1f} KB -> {a['size'] / 1024:.1f} KB")
 
 
 if __name__ == "__main__":

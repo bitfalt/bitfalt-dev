@@ -13,6 +13,33 @@ for (const [slug, slides] of DECKS) {
     const body = await (await request.get(`/talks/${slug}`)).body();
     expect(body.equals(readFileSync(`public/talks/${slug}/index.html`))).toBe(true);
   });
+
+  e2e(`/talks/${slug}: assets are files, all load, no errors`, async ({ page, request, errors, notFound }) => {
+    void errors; void notFound;
+    const html = readFileSync(`public/talks/${slug}/index.html`, 'utf8');
+    expect(html.match(/data:(image|font)\/[\w.+-]+;base64,/g) ?? []).toEqual([]);
+    const assets = [...new Set(html.match(/\/talks\/assets\/[\w.-]+/g) ?? [])];
+    expect(assets.length).toBeGreaterThan(0);
+    for (const a of assets) {
+      const r = await request.get(a);
+      expect(r.status(), a).toBe(200);
+      expect((await r.body()).equals(readFileSync(`public${a}`)), a).toBe(true);
+    }
+    await page.goto(`/talks/${slug}`, { waitUntil: 'networkidle' });
+    await page.evaluate(() => document.fonts.ready);
+    expect(await page.evaluate(() => [...document.fonts].some(f => f.status === 'loaded'))).toBe(true);
+    const withImages = await page.evaluate(() => [...document.querySelectorAll('.deck .slide')].flatMap((s, i) => s.querySelector('img') ? [i + 1] : []));
+    expect(withImages.length).toBeGreaterThan(0);
+    for (const i of withImages) {
+      await page.evaluate(i => { location.hash = `#/${i}`; }, i);
+      await page.waitForFunction(i => {
+        const s = document.querySelectorAll('.deck .slide')[i - 1]!;
+        return s.classList.contains('is-current') && [...s.querySelectorAll('img')].every(im => im.complete);
+      }, i, { timeout: 10_000 });
+    }
+    const broken = await page.evaluate(() => [...document.images].filter(im => im.naturalWidth === 0).map(im => im.src));
+    expect(broken).toEqual([]);
+  });
 }
 
 const ROUTES: [string, number, RegExp?][] = [

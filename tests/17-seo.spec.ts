@@ -31,6 +31,7 @@ for (const c of CASES) {
         ld: [...document.querySelectorAll('script[type="application/ld+json"]')].map(s => s.textContent ?? ''),
         robots: meta('robots'),
         posts: document.querySelectorAll('main a.a-name').length,
+        preload: [...document.querySelectorAll('link[rel=preload][as=font]')].map(l => l.getAttribute('href') ?? ''),
       };
     });
 
@@ -83,6 +84,13 @@ for (const c of CASES) {
       expect(og['og:locale:alternate']).toEqual([]);
     }
 
+    if (c.path.startsWith('/talks/')) {
+      expect(head.preload).toHaveLength(1);
+      expect(head.preload[0]).toMatch(/^\/talks\/assets\/[0-9a-f]{16}\.woff2$/);
+      const font = await request.get(head.preload[0]!);
+      expect(font.status()).toBe(200);
+    }
+
     expect(head.ld).toHaveLength(1);
     const ld = JSON.parse(head.ld[0]!) as { '@type'?: string; '@graph'?: { '@type': string }[] };
     const types = ld['@graph'] ? ld['@graph'].map(n => n['@type']) : [ld['@type']];
@@ -119,6 +127,6 @@ e2e('the sitemap lists every page without build-time lastmod and robots.txt poin
     expect(urls).toContain(`${SITE}${p}`);
   }
   expect(sm).not.toContain('<lastmod>');
-  expect(urls.some(u => u!.includes('/og/') || u!.includes('404'))).toBe(false);
+  expect(urls.some(u => u!.includes('/og/') || u!.includes('/talks/assets/') || u!.includes('404'))).toBe(false);
   expect(await (await request.get('/robots.txt')).text()).toContain(`Sitemap: ${SITE}/sitemap-index.xml`);
 });

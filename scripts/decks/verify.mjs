@@ -1,9 +1,11 @@
 import fs from "node:fs"
+import http from "node:http"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright"
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
+const PUBLIC = path.join(HERE, "..", "..", "public")
 const TALKS = "/Users/bitfalt/Developer/talks"
 const BROWSER = process.env.CHROMIUM || "/Applications/Helium.app/Contents/MacOS/Helium"
 const DECKS = [
@@ -18,6 +20,18 @@ const notesOf = (html) =>
 
 const sentence = (note) => note.split(/(?<=[.?!])\s+/).find((s) => s.length > 40) || note.slice(0, 80)
 
+// Serves out/<slug>.html at /talks/<slug> and every other path from public/, as Vercel does.
+const TYPES = { ".html": "text/html; charset=utf-8", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".woff2": "font/woff2", ".ico": "image/x-icon" }
+const server = http.createServer((req, res) => {
+	const url = decodeURIComponent(new URL(req.url, "http://x").pathname)
+	const deck = url.match(/^\/talks\/(stellar-sessions-\d+)\/?$/)
+	const file = deck ? path.join(HERE, "out", `${deck[1]}.html`) : path.join(PUBLIC, path.normalize(url))
+	if (!file.startsWith(deck ? HERE : PUBLIC) || !fs.existsSync(file) || !fs.statSync(file).isFile()) { res.writeHead(404).end(); return }
+	res.writeHead(200, { "content-type": TYPES[path.extname(file)] || "application/octet-stream" }).end(fs.readFileSync(file))
+})
+await new Promise((r) => server.listen(0, "127.0.0.1", r))
+const ORIGIN = `http://127.0.0.1:${server.address().port}`
+
 const browser = await chromium.launch({ executablePath: BROWSER, headless: true })
 let failed = false
 const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (!ok) failed = true }
@@ -30,10 +44,15 @@ for (const d of DECKS) {
 	const notes = notesOf(fs.readFileSync(path.join(TALKS, d.src, "index.html"), "utf8"))
 	const picks = [0, Math.floor(notes.length / 2), notes.length - 1].map((i) => sentence(notes[i]))
 	for (const s of picks) check(!html.includes(s), `note sentence absent: "${s.slice(0, 70)}…"`)
+	check(!/;base64,/.test(html), "no base64 data URI in the HTML")
+	const assets = [...new Set([...html.matchAll(/\/talks\/assets\/[\w.-]+/g)].map((m) => m[0]))]
+	const missing = assets.filter((a) => !fs.existsSync(path.join(PUBLIC, a)))
+	check(assets.length > 0 && missing.length === 0, `${assets.length} asset URLs exist in public/${missing.length ? ": missing " + missing.join(", ") : ""}`)
 
-	const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 }, offline: true })
+	const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } })
 	const blocked = new Set()
-	await ctx.route(/^(?!file:|data:|blob:)/, (r) => { blocked.add(new URL(r.request().url()).origin); r.abort() })
+	await ctx.route((url) => url.origin !== ORIGIN && !/^(data|blob):/.test(url.protocol), (r) => { blocked.add(new URL(r.request().url()).origin); r.abort() })
+	await ctx.route("**/_vercel/insights/**", (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: "" }))
 	const page = await ctx.newPage()
 	const errors = []
 	const netErrors = []
@@ -43,13 +62,16 @@ for (const d of DECKS) {
 		const t = m.text()
 		;(/net::|Failed to load resource|Failed to fetch/.test(t) ? netErrors : errors).push(t)
 	})
-	await page.goto(`file://${file}`)
+	const notFound = []
+	page.on("response", (r) => { if (r.status() >= 400 && new URL(r.url()).origin === ORIGIN) notFound.push(`${r.status()} ${r.url()}`) })
+	await page.goto(`${ORIGIN}/talks/${d.slug}`)
+	await page.evaluate(() => document.fonts.ready)
 	await page.waitForTimeout(400)
 
 	const count = await page.locator(".deck .slide").count()
 	check(count === d.slides, `slide count ${count} === ${d.slides}`)
 	check(await page.locator("aside.notes, #notes-panel, #index-panel, #btn-notes, #btn-index, .panel-overlay").count() === 0, "no notes/index markup in DOM")
-	check(await page.evaluate(() => [...document.fonts].some((f) => f.status === "loaded" || f.status === "unloaded")), "embedded @font-face present")
+	check(await page.evaluate(() => [...document.fonts].some((f) => f.status === "loaded" || f.status === "unloaded")), "@font-face present")
 
 	const overlays = () => page.evaluate(() =>
 		[...document.querySelectorAll("body *")].filter((e) => {
@@ -77,11 +99,14 @@ for (const d of DECKS) {
 	check(fs.readdirSync(shots).length === count, `${count} screenshots in out/shots/${d.slug}`)
 	check(await page.evaluate(() => location.hash) === `#/${count}`, "stepped to last slide via ArrowRight")
 
+	check(await page.evaluate(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0)), "every <img> loaded after its slide was shown")
+	check(notFound.length === 0, `no 4xx/5xx from the local server${notFound.length ? ": " + notFound.join(", ") : ""}`)
 	check(errors.length === 0, `zero console/page errors${errors.length ? ": " + errors.join(" | ") : ""}`)
 	console.log(`INFO network attempts blocked: ${[...blocked].join(", ") || "none"}; network console errors: ${netErrors.length}${netErrors.length ? " (" + [...new Set(netErrors)].slice(0, 3).join(" | ") + ")" : ""}`)
 	await ctx.close()
 }
 
 await browser.close()
+server.close()
 console.log(failed ? "\nSOME CHECKS FAILED" : "\nALL CHECKS PASSED")
 process.exit(failed ? 1 : 0)

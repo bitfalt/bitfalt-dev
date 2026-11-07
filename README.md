@@ -21,6 +21,7 @@ bun run preview          # serve dist/ in the foreground
 - `src/content/writing/`: blog posts (Astro content collection `writing`).
 - `src/scripts/app.ts`: the only client script (header, palette, shell, heatmap, winner celebration, boot).
 - `public/talks/<slug>/index.html`: slide-only decks, served at `/talks/<slug>`.
+- `public/talks/assets/`: the deck images and fonts, named by content hash and shared by all decks.
 - `src/lib/seo.ts`: head tags (description, canonical, hreflang, OG, Twitter) and JSON-LD for every page and deck.
 - `src/lib/og.ts`, `src/pages/og/[...key].png.ts`: OG images, rendered at build time with satori and resvg.
 - `src/assets/fonts/`: Geist Mono TTF files for the OG renderer (satori cannot read woff2), with `OFL.txt`.
@@ -63,13 +64,23 @@ cd scripts/decks
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-workshop-talk out/stellar-sessions-1.html
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-x402-talk out/stellar-sessions-2.html
 python3 build-public-decks.py /Users/bitfalt/Developer/talks/stellar-web3-onboarding-talk out/stellar-sessions-3.html
-bun verify.mjs                 # slide count, no notes, arrow navigation
+bun verify.mjs                 # serves out/ and public/ over HTTP: slide count, no notes, assets, arrow navigation
 for n in 1 2 3; do cp out/stellar-sessions-$n.html ../../public/talks/stellar-sessions-$n/index.html; done
 ```
 
 `build-public-decks.py` runs `node deck-head.ts` to inject the description, canonical, OG, Twitter, JSON-LD, theme-color and favicon tags into `<head>`. The tags come from `src/data/site.ts` through `src/lib/seo.ts`. Do not edit the deck HTML by hand.
 
-`verify.mjs` uses the repo's `playwright` package (run `bun install` first) and reads `CHROMIUM` for the browser path. It defaults to Helium. `scripts/decks/out/` is git-ignored.
+The script also moves every base64 image and font out of the deck into `public/talks/assets/`. Each file name is the first 16 hex digits of the SHA-256 of its content, so decks that use the same font share one file. PNG images become lossless WebP when that is smaller. SVG stays SVG. Each `<img>` gets its real `width` and `height`, and images after the first slide get `loading="lazy"` and `decoding="async"`. The Latin file of the cover font is preloaded. The script also makes the Anterior and Siguiente buttons darker in decks 1 and 2 to pass WCAG AA.
+
+`public/talks/assets/` is shared by all decks and is committed. The script adds files and never deletes them. After a rebuild, remove the files that no deck uses:
+
+```sh
+cd public/talks/assets && for f in *; do grep -q "$f" ../stellar-sessions-*/index.html || rm "$f"; done
+```
+
+`vercel.json` serves `/talks/assets/` with a one-year immutable cache, because a changed file gets a new name. The decks need an HTTP server: they do not open from `file://`.
+
+`verify.mjs` uses the repo's `playwright` package (run `bun install` first) and reads `CHROMIUM` for the browser path. It defaults to Helium. `build-public-decks.py` uses `sharp` from `node_modules` for WebP. `scripts/decks/out/` is git-ignored.
 
 ## OG images and favicons
 
@@ -94,4 +105,4 @@ bun test -t 'nav en'           # tests whose name matches
 
 ## Deploy
 
-`vercel.json` sets `cleanUrls` and cache headers for fonts and hashed assets. No Vercel project is linked.
+`vercel.json` sets `cleanUrls` and cache headers for fonts, hashed assets and deck assets. No Vercel project is linked.
