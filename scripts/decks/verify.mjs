@@ -52,7 +52,7 @@ for (const d of DECKS) {
 	const ctx = await browser.newContext({ viewport: { width: 1600, height: 900 } })
 	const blocked = new Set()
 	await ctx.route((url) => url.origin !== ORIGIN && !/^(data|blob):/.test(url.protocol), (r) => { blocked.add(new URL(r.request().url()).origin); r.abort() })
-	await ctx.route("**/_vercel/insights/**", (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: "" }))
+	await ctx.route("https://static.cloudflareinsights.com/**", (r) => r.fulfill({ status: 200, contentType: "text/javascript", body: "" }))
 	const page = await ctx.newPage()
 	const errors = []
 	const netErrors = []

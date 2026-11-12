@@ -93,7 +93,7 @@ async function body(project: Project, title: string, options: Options, fn: (f: F
   });
   const page = await context.newPage();
   if (options.booted ?? true) await page.addInitScript(() => { sessionStorage.setItem('bf-booted', '1'); });
-  await page.route('**/_vercel/insights/**', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
+  await page.route('https://static.cloudflareinsights.com/**', r => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
 
   const errors: string[] = [];
   page.on('console', m => {
