@@ -17,7 +17,7 @@ export function sectionCommand(key: CommandKey, lang: Lang, postCount = 0): Sect
       const g = hackathonGroups();
       return {
         cmd: 'ls ~/hackathons --sort=wins',
-        out: [`★ ${ids(g.winners).join('  ★ ')}  ${t.hackBoth}`, `${ids(g.pending).join('  ')}  ${t.hackPending}`, ids(g.rest).join('  ')],
+        out: [`★ ${ids(g.winners).join('  ★ ')}  ${t.hackAwards}`, `${ids(g.pending).join('  ')}  ${t.hackPending}`, ids(g.rest).join('  ')],
       };
     }
     case 'talks':

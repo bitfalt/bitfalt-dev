@@ -1,13 +1,13 @@
 import { e2e, expect, open, poll, SHOTS, HIDE } from './harness';
 
-const WINNERS = ['parquiz', 'veilescrow', 'buildmyevent'];
+const WINNERS = ['sigilo', 'parquiz', 'veilescrow', 'buildmyevent'];
 
-e2e('winner celebration fires on the three winners only', async ({ page, width, errors }) => {
+e2e('winner celebration fires on the winners only', async ({ page, width, errors }) => {
   void errors;
   await open(page, '/');
   await page.addStyleTag({ content: HIDE });
   const order = await page.evaluate(() => [...document.querySelectorAll('#hackathons > .a-list > .a-it')].map(li => li.id.slice(2)));
-  expect(order).toEqual(['parquiz', 'veilescrow', 'buildmyevent', 'paralock', 'sigilo', 'gacha-desk', 'echoes-of-the-void']);
+  expect(order).toEqual(['sigilo', 'parquiz', 'veilescrow', 'buildmyevent', 'paralock', 'gacha-desk', 'echoes-of-the-void']);
   expect(await page.locator('main .a-it[data-celebrated]').count()).toBe(0);
   await page.evaluate(() => {
     const log: { added: string[]; removed: string[]; particles: number[] } = { added: [], removed: [], particles: [] };
@@ -28,7 +28,7 @@ e2e('winner celebration fires on the three winners only', async ({ page, width, 
     await page.screenshot({ path: `${SHOTS}${width}-winner-${id}-burst.png`, clip: { x: Math.max(0, b.x - 120), y: Math.max(0, b.y - 90), width: Math.min(width - Math.max(0, b.x - 120), 480), height: 220 } });
   }
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await poll(async () => (await bursts()).removed.length, 3, { timeout: 5000 });
+  await poll(async () => (await bursts()).removed.length, WINNERS.length, { timeout: 5000 });
   const log = await bursts();
   expect([...log.added].sort()).toEqual([...WINNERS].sort());
   expect([...log.removed].sort()).toEqual([...WINNERS].sort());
@@ -36,7 +36,7 @@ e2e('winner celebration fires on the three winners only', async ({ page, width, 
   expect(await page.evaluate(() => document.querySelectorAll('.a-burst').length)).toBe(0);
   const celebrated = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll<HTMLElement>('main .a-it')].filter(x => x.dataset['celebrated']).map(x => [x.id.slice(2), x.dataset['celebrated']])));
   expect(celebrated).toEqual(Object.fromEntries(WINNERS.map(id => [id, '1'])));
-  expect(await page.evaluate(() => document.querySelectorAll('.a-winner').length)).toBe(3);
+  expect(await page.evaluate(() => document.querySelectorAll(".a-winner").length)).toBe(WINNERS.length);
   await page.addStyleTag({ content: '.hdr{position:static!important}' });
   await page.locator('#hackathons').screenshot({ path: `${SHOTS}${width}-hackathons.png` });
 });

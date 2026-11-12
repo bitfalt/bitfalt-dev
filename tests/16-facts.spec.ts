@@ -1,8 +1,8 @@
 import { e2e, expect, open, run, toContainText, LANGS } from './harness';
 
 const EXPECT = {
-  en: { now: 'Backend Engineer at Nexus', trophies: 'Prize winners: 3 projects. ParQuiz placed in both tracks.', whoami: 'Now: Backend Engineer at Nexus. Studying: M.S. Computer Science at TEC.' },
-  es: { now: 'Backend Engineer en Nexus', trophies: 'Proyectos premiados: 3. ParQuiz ganó en ambas categorías.', whoami: 'Ahora: Backend Engineer en Nexus. Estudio: M.S. Computer Science en el TEC.' },
+  en: { now: 'Backend Engineer at Nexus', trophies: 'Prize winners: 4 projects. Sigilo: 2 prizes. ParQuiz: both tracks.', whoami: 'Now: Backend Engineer at Nexus. Studying: M.S. Computer Science at TEC.' },
+  es: { now: 'Backend Engineer en Nexus', trophies: 'Proyectos premiados: 4. Sigilo: 2 premios. ParQuiz: ambas categorías.', whoami: 'Ahora: Backend Engineer en Nexus. Estudio: M.S. Computer Science en el TEC.' },
 };
 
 for (const { lang, path } of LANGS) {

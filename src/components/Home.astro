@@ -12,7 +12,7 @@ const { lang, posts } = Astro.props;
 const t = ui[lang];
 const H = contribGrid();
 const contribText = fmt(t.contrib, { n: H.total.toLocaleString('en-US') });
-const winLabel = (h: Hackathon) => (h.win === 'both' ? t.winnerBoth : t.winner);
+const winLabel = (h: Hackathon) => h.award?.badge[lang] ?? t.winner;
 const chips = ['help', 'whoami', 'ls', 'trophies', 'cat parquiz', 'socials', 'sudo hire-me'];
 const codeParts = (text: string, code?: string) => {
   if (!code || !text.includes(code)) return [text];

@@ -31,8 +31,8 @@ e2e('shell commands', async ({ page, context, width, errors }) => {
   expect(outs['open github url']).toBe('https://github.com/bitfalt');
   expect(new URL(outs['open 2 url']!).pathname).toBe('/talks/stellar-sessions-2');
   expect(outs['sudo hire-me']).toContain('Permission granted. Good call.');
-  expect(outs['trophies']).toContain('Prize winners: 3 projects.');
-  expect(outs['order']).toBe('parquiz veilescrow buildmyevent paralock sigilo gacha-desk echoes-of-the-void');
+  expect(outs['trophies']).toContain('Prize winners: 4 projects.');
+  expect(outs['order']).toBe('sigilo parquiz veilescrow buildmyevent paralock gacha-desk echoes-of-the-void');
   expect(outs['socials']).toContain('dagarbanz@proton.me');
   expect(outs['vim']).toContain(':q!');
 });

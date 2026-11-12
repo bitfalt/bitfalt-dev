@@ -1,4 +1,4 @@
-import { bothTracks, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
+import { awarded, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
 import type { UI } from './en';
 
 const { email } = person;
@@ -19,7 +19,7 @@ export const es: UI = {
   copyEmail: 'Copiar el correo', copied: `Copiado ${email}`, copyFail: `El portapapeles está bloqueado. El correo es ${email}`,
   switchLang: 'Switch to English', switchedLang: 'Idioma: español',
   openGithub: 'Abrir perfil de GitHub', openLinkedin: 'Abrir LinkedIn', openX: 'Abrir perfil de X',
-  present: 'presente', winner: 'Ganador', winnerBoth: 'Premio en ambas categorías', pending: 'Resultado pendiente',
+  present: 'presente', winner: 'Ganador', pending: 'Resultado pendiente',
   solo: 'En solitario', team: 'En equipo', fullgame: 'Categoría juego completo',
   remoteFT: 'Remoto, tiempo completo', cr: 'Costa Rica',
   stars: '{n} estrellas', slides: '{n} diapositivas', own: 'repo propio',
@@ -40,7 +40,7 @@ export const es: UI = {
   local: 'hora local en Costa Rica',
   newTab: ' (se abre en otra pestaña)',
   ossMore: '…  3 pull requests más y 1 repo propio',
-  hackBoth: `# ${bothTracks.id}: ambas categorías`,
+  hackAwards: `# ${awarded.map(h => `${h.id}: ${h.award!.short.es}`).join(', ')}`,
   hackPending: '# resultado pendiente',
   talksNote: '# las tres en español',
   shellOutput: 'Salida de la shell',
@@ -80,7 +80,7 @@ export const es: UI = {
   whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', `Ahora: ${currentJob.role} en ${currentJob.org}. Estudio: ${degree} en el ${school}.`],
   lsHint: 'entrá con cd, o leé un proyecto con cat.',
   langOk: 'Idioma: español.',
-  trophies: `Proyectos premiados: ${winnerCount}. ${bothTracks.name} ganó en ambas categorías.`,
+  trophies: `Proyectos premiados: ${winnerCount}. ${awarded.map(h => `${h.name}: ${h.award!.short.es}`).join('. ')}.`,
   showOnPage: 'ver en la página',
   exit: 'logout? Todavía no. Bajá.',
 };

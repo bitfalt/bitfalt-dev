@@ -1,4 +1,4 @@
-import { bothTracks, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
+import { awarded, currentJob, hackathonGroups, person, winnerCount } from '../data/site';
 
 const { email } = person;
 const heroLead = 'I build infrastructure in Rust: exchanges, AI platforms, blockchains.';
@@ -18,7 +18,7 @@ export const en = {
   copyEmail: 'Copy email address', copied: `Copied ${email}`, copyFail: `Clipboard blocked. The address is ${email}`,
   switchLang: 'Cambiar a español', switchedLang: 'Language: English',
   openGithub: 'Open GitHub profile', openLinkedin: 'Open LinkedIn', openX: 'Open X profile',
-  present: 'present', winner: 'Winner', winnerBoth: 'Prize winner, both tracks', pending: 'Result pending',
+  present: 'present', winner: 'Winner', pending: 'Result pending',
   solo: 'Solo', team: 'Team entry', fullgame: 'Full game track',
   remoteFT: 'Remote, full time', cr: 'Costa Rica',
   stars: '{n} stars', slides: '{n} slides', own: 'my repo',
@@ -39,7 +39,7 @@ export const en = {
   local: 'local time in Costa Rica',
   newTab: ' (opens in a new tab)',
   ossMore: '…  3 more pull requests and 1 repo of my own',
-  hackBoth: `# ${bothTracks.id}: both tracks`,
+  hackAwards: `# ${awarded.map(h => `${h.id}: ${h.award!.short.en}`).join(', ')}`,
   hackPending: '# result pending',
   talksNote: '# all in Spanish',
   shellOutput: 'Shell output',
@@ -79,7 +79,7 @@ export const en = {
   whoami: ['Daniel Garbanzo (bitfalt). Costa Rica.', '{summary}', `Now: ${currentJob.role} at ${currentJob.org}. Studying: ${degree} at ${school}.`],
   lsHint: 'cd into one, or cat a project.',
   langOk: 'Language set to English.',
-  trophies: `Prize winners: ${winnerCount} projects. ${bothTracks.name} placed in both tracks.`,
+  trophies: `Prize winners: ${winnerCount} projects. ${awarded.map(h => `${h.name}: ${h.award!.short.en}`).join('. ')}.`,
   showOnPage: 'show on page',
   exit: 'logout? Not yet. Scroll down.',
 };

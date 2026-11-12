@@ -10,7 +10,7 @@ const setHTML = (el: Element, html: string) => el.replaceChildren(document.creat
 const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 const ext = (label: string, url: string) => `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}<span class="sr-only">${t.newTab}</span></a>`;
-const winLabel = (h: Hackathon) => (h.win === 'both' ? t.winnerBoth : t.winner);
+const winLabel = (h: Hackathon) => h.award?.badge[lang] ?? t.winner;
 const store = {
   get: (s: Storage, k: string) => { try { return s.getItem(k); } catch { return null; } },
   set: (s: Storage, k: string, v: string) => { try { s.setItem(k, v); } catch { /* storage disabled */ } },

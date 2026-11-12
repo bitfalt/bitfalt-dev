@@ -55,7 +55,7 @@ export interface Hackathon {
   event: string;
   date: YearMonth;
   result: Result;
-  win?: 'both';
+  award?: { badge: Text; short: Text };
   entry: Entry | null;
   bullets: Text[];
   links: Link[];
@@ -176,12 +176,15 @@ export const hackathons: Hackathon[] = [
     links: [{ label: 'paralock.xyz', url: 'https://paralock.xyz' }, { label: 'GitHub', url: 'https://github.com/bitfalt/paralock' }],
   },
   {
-    id: 'sigilo', name: 'Sigilo', event: 'Monad Metropolis', date: '2026-10', result: 'pending', entry: 'solo',
+    id: 'sigilo', name: 'Sigilo', event: 'Monad Metropolis', date: '2026-10', result: 'winner', entry: 'solo',
+    award: { badge: { en: 'Winner, 2 prizes', es: 'Ganador, 2 premios' }, short: { en: '2 prizes', es: '2 premios' } },
     bullets: [
       { en: 'Private payroll in stablecoins. Workers prove their income in zero knowledge and take salary advances repaid from payroll. Tagline: “The original proof of work.”',
         es: 'Planilla privada en stablecoins. Quien trabaja prueba sus ingresos en zero knowledge y pide adelantos de salario que se pagan desde la planilla. Lema: “The original proof of work.”' },
       { en: 'Noir circuit (about 9,400 gates) proved in the browser in about 6 s. Passkey accounts, no seed phrase. Live on Monad testnet.',
         es: 'Circuito en Noir (unas 9,400 compuertas) probado en el navegador en unos 6 s. Cuentas con passkey, sin seed phrase. En vivo en la testnet de Monad.' },
+      { en: 'Won 2 prizes: Envio Best Project and Chainlink CRE Best Workflow. An Envio indexer tracks payroll and advances, and a Chainlink CRE workflow runs payday.',
+        es: 'Ganó 2 premios: Envio Best Project y Chainlink CRE Best Workflow. Un indexer de Envio sigue la planilla y los adelantos, y un workflow de Chainlink CRE corre el día de pago.' },
     ],
     links: [{ label: 'sigilo.work', url: 'https://sigilo.work' }, { label: 'GitHub', url: 'https://github.com/bitfalt/Sigilo' }],
   },
@@ -219,7 +222,8 @@ export const hackathons: Hackathon[] = [
     links: [{ label: 'GitHub', url: 'https://github.com/bitfalt/echoes-of-the-void' }, { label: 'submission', url: 'https://github.com/dojoengine/game-jams/pull/137' }],
   },
   {
-    id: 'parquiz', name: 'ParQuiz', event: 'Dojo Game Jam VIII', date: '2026-03', result: 'winner', win: 'both', entry: 'team',
+    id: 'parquiz', name: 'ParQuiz', event: 'Dojo Game Jam VIII', date: '2026-03', result: 'winner', entry: 'team',
+    award: { badge: { en: 'Prize winner, both tracks', es: 'Premio en ambas categorías' }, short: { en: 'both tracks', es: 'ambas categorías' } },
     bullets: [
       { en: 'A multiplayer Parchís-style trivia game on Starknet with Dojo. Matchmaking, private lobbies, VRF dice and on-chain rules.',
         es: 'Un juego multijugador de trivia al estilo Parchís en Starknet con Dojo. Matchmaking, salas privadas, dados con VRF y reglas on-chain.' },
@@ -284,4 +288,4 @@ export function hackathonsByWins(list: Hackathon[] = hackathons): Hackathon[] {
 
 export const currentJob = experience.find(e => e.end === null)!;
 export const winnerCount = hackathonGroups().winners.length;
-export const bothTracks = hackathons.find(h => h.win === 'both')!;
+export const awarded = hackathonGroups().winners.filter(h => h.award);

@@ -7,7 +7,7 @@ e2e('reduced motion: no boot, no running animations, instant jumps', { reducedMo
   const boot = await page.evaluate(() => ({ skipHidden: (document.querySelector('[data-skip]') as HTMLElement).hidden, booting: document.querySelector('[data-term]')!.hasAttribute('data-booting'), first: (document.querySelector('[data-out]') as HTMLElement).innerText.split('\n')[0] }));
   expect(boot).toEqual({ skipHidden: true, booting: false, first: expect.stringMatching(/^Hi/) });
   await page.screenshot({ path: `${SHOTS}${width}-reduced-motion.png` });
-  for (const id of ['parquiz', 'veilescrow', 'buildmyevent']) { await page.evaluate(id => document.getElementById('p-' + id)!.scrollIntoView({ block: 'center' }), id); await page.waitForTimeout(150); }
+  for (const id of ['sigilo', 'parquiz', 'veilescrow', 'buildmyevent']) { await page.evaluate(id => document.getElementById('p-' + id)!.scrollIntoView({ block: 'center' }), id); await page.waitForTimeout(150); }
   await page.evaluate(() => scrollTo(0, 0));
   await run(page, 'trophies');
   await run(page, 'sudo hire-me');
