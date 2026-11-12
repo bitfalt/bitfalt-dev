@@ -78,13 +78,13 @@ The script also moves every base64 image and font out of the deck into `public/t
 cd public/talks/assets && for f in *; do grep -q "$f" ../stellar-sessions-*/index.html || rm "$f"; done
 ```
 
-`vercel.json` serves `/talks/assets/` with a one-year immutable cache, because a changed file gets a new name. The decks need an HTTP server: they do not open from `file://`.
+`public/_headers` serves `/talks/assets/` with a one-year immutable cache, because a changed file gets a new name. The decks need an HTTP server: they do not open from `file://`.
 
 `verify.mjs` uses the repo's `playwright` package (run `bun install` first) and reads `CHROMIUM` for the browser path. It defaults to Helium. `build-public-decks.py` uses `sharp` from `node_modules` for WebP. `scripts/decks/out/` is git-ignored.
 
 ## OG images and favicons
 
-`astro build` renders one 1200x630 PNG per page under `/og/`: the EN and ES home pages, the two writing indexes, each post and each deck. No browser is needed, so this runs on Vercel. The 404 page uses the home image. Change the design in `src/lib/og.ts`.
+`astro build` renders one 1200x630 PNG per page under `/og/`: the EN and ES home pages, the two writing indexes, each post and each deck. No browser is needed, so this runs in CI. The 404 page uses the home image. Change the design in `src/lib/og.ts`.
 
 ```sh
 bun run favicons               # renders favicon-32.png, favicon.ico, apple-touch-icon.png with Helium
@@ -105,4 +105,18 @@ bun test -t 'nav en'           # tests whose name matches
 
 ## Deploy
 
-`vercel.json` sets `cleanUrls` and cache headers for fonts, hashed assets and deck assets. No Vercel project is linked.
+The site is static assets on a Cloudflare Worker (`wrangler.jsonc`, free plan, no Worker code).
+
+- `public/_headers`: one-year immutable cache for fonts, `/_astro/` and deck assets.
+- `public/_redirects`: serves `/talks/<slug>` without a trailing-slash redirect, because the decks use that URL as canonical.
+- `html_handling: auto-trailing-slash`: other pages redirect to the slash form, which is their canonical URL.
+- Analytics: Cloudflare Web Analytics beacon (`src/lib/analytics.ts`). No cookies.
+
+```sh
+bun run build
+CLOUDFLARE_ACCOUNT_ID=576bff19a0ec7d358c422d28a7e7dbc0 \
+CLOUDFLARE_API_TOKEN=$(security find-generic-password -a bitfalt -s cloudflare-wrangler-token -w) \
+  bunx wrangler deploy </dev/null
+```
+
+A push to main deploys with `.github/workflows/deploy.yml`.
